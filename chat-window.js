@@ -26,92 +26,95 @@ function onReadyStateChangeHanddler(){
 
 //main logic 
 function main(){
+        chrome.runtime.sendMessage({'action': 'getCurrentTabInfo'});
+        
         var tab = null    ;
         var chatRoom = document.getElementById('chatRoom');
         var chatHeader = document.getElementById('chatHeader');
-        var chatMenu = document.getElementById('chatMenu-hide');
-        var chatMenuList = document.getElementById('chatMenuList');
-        var chatSubMenu_ChageName = document.getElementById('chatSubMenu-ChageName-hide');
-        
         var chatArea = document.getElementById('chatArea');
         var chatTyping = document.getElementById('chatTyping');
         var chatInputBar = document.getElementById('chatInputBar');
 
+        var chatMenu = document.getElementById('chatMenu-hide');
+        var chatMenuList = document.getElementById('chatMenuList');
+       
+        var chatMenu_ChageName = chatMenu.getElementsByClassName('chageName')[0];
+        var chatSubMenu_ChageName = document.getElementById('chatSubMenu-ChageName-hide');
+        var chatSubMenu_ChageName_input = chatSubMenu_ChageName.getElementsByClassName('chatSubMenu-ChageName-input')[0];
+        
+        var chatMenu_MemberList = chatMenu.getElementsByClassName('memberList')[0];
+        var chatSubMenu_MemberList = document.getElementById('chatSubMenu-MemberList-hide');
+        
+        dragable(chatRoom,chatRoom);
 
-        chrome.runtime.sendMessage({'action': 'getCurrentTabInfo'});
-        dragable('chatRoom','chatRoom');
 
-
-        //change ball mode &  window mode
-        chatRoom.addEventListener('dblclick',windowModeChange);
-        chatHeader.addEventListener('dblclick',windowModeChange);
+        //window mode control 
+        chatRoom.addEventListener('dblclick',function(e){modeChange('chatRoom',null,e);});
+        chatHeader.addEventListener('dblclick',function(e){modeChange('chatRoom',null,e);});
         chatMenu.addEventListener('dblclick',function(e){e.stopPropagation()});
         chatSubMenu_ChageName.addEventListener('dblclick',function(e){e.stopPropagation()});
         chatArea.addEventListener('dblclick',function(e){e.stopPropagation()});
         chatTyping.addEventListener('dblclick',function(e){e.stopPropagation()});
         chatInputBar.addEventListener('dblclick',function(e){e.stopPropagation()});
-        function windowModeChange(event){
-
-            if(event)event.stopPropagation();
-
-            if(chatRoom.getAttribute('id') == 'chatRoom'){
-                chatRoom.setAttribute('id','chatRoom-ball');
-                return;
-            }
-
-            if(chatRoom.getAttribute('id') == 'chatRoom-ball'){
-                chatRoom.setAttribute('id','chatRoom');
-                return;
-            }
-        }
         
-        //change menu show &  menu hide
-        chatMenu.addEventListener('mouseenter', menuModeChange);
-        chatMenu.addEventListener('mouseleave', menuModeChange);
-        chatMenuList.addEventListener('click', menuModeChange);
-        function menuModeChange(event){
-
-            if(event)event.stopPropagation();
-
-            if(chatMenu.getAttribute('id') == 'chatMenu'){
-                chatMenu.setAttribute('id','chatMenu-hide');
-                return;
-            }
-
-            if(chatMenu.getAttribute('id') == 'chatMenu-hide' && event.type !='mouseleave'){
-                chatMenu.setAttribute('id','chatMenu');
-                return;
-            }
-        }
+        chatMenu.addEventListener('mouseenter', function(e){modeChange('chatMenu',null,e);});
+        chatMenu.addEventListener('mouseleave', function(e){modeChange('chatMenu',null,e);});
+        chatMenuList.addEventListener('click' , function(e){modeChange('chatMenu',null,e);});
 
         
-        var chatMenu_ChageName = chatMenu.getElementsByClassName('chageName')[0];
-        chatMenu_ChageName.addEventListener('click', subMenuModeChange);
-
-        //change submenu show &  submenu hide
-        var chatSubMenu_ChageName_input = chatSubMenu_ChageName.getElementsByClassName('chatSubMenu-ChageName-input')[0];
-            chatSubMenu_ChageName.addEventListener('mouseleave', subMenuModeChange);
-            chatSubMenu_ChageName_input.addEventListener('keyup', sendChageNameMessageHanddler);
-        function subMenuModeChange(event){
-            if(event)event.stopPropagation();
-
-            if(chatSubMenu_ChageName.getAttribute('id') == 'chatSubMenu-ChageName'){
-                chatSubMenu_ChageName.setAttribute('id','chatSubMenu-ChageName-hide');
-                return;
-            }
-
-            if(chatSubMenu_ChageName.getAttribute('id') == 'chatSubMenu-ChageName-hide' && event.type !='mouseleave'){
-                chatSubMenu_ChageName.setAttribute('id','chatSubMenu-ChageName');
-                let getUserName = {
-                        'action'      : 'getUserName'         ,
-                 };
+        chatMenu_ChageName.addEventListener('click', function(e){modeChange('chageName',chatMenu_ChageName.doProcess,e);});
+        chatMenu_ChageName.doProcess = function showUserName(){
+                let getUserName = { 'action'      : 'getUserName' };
+                let targetElement = this;
                 chrome.runtime.sendMessage(getUserName,function(response){
-                        chatSubMenu_ChageName_input.value = response.data ;
+                        targetElement.value = response.data ;
                 });
-                return;
+        };
+
+        chatMenu_MemberList.addEventListener('click', function(e){modeChange('memberList',chatMenu_MemberList.doProcess,e);});
+        chatMenu_MemberList.doProcess = function(){
+                // let getUserName = { 'action'      : 'getMemberList' };
+                // chrome.runtime.sendMessage(getUserName,function(response){
+                //         this.value = response.data ;
+                // });
+        };
+
+       
+        chatSubMenu_ChageName.addEventListener('mouseleave', function(e){modeChange('chageName',chatMenu_ChageName.doProcess,e);});
+
+        function modeChange(traget,proceeFunc,event){
+
+            //if(event)event.stopPropagation();
+
+            let targetElement ;
+            switch(traget){
+                case 'chatRoom':
+                    targetElement = chatRoom;
+                    break;
+                case 'chatMenu':
+                    targetElement = chatMenu;
+                    break;
+                case 'chageName':
+                    targetElement = chatSubMenu_ChageName;
+                    break;
+                case 'memberList':
+                    targetElement = chatSubMenu_MemberList;
+                    break;
             }
+
+
+            let elemId = targetElement.getAttribute('id');
+            let isHidden = (elemId.slice(elemId.lastIndexOf('-hide') , elemId.length)=='-hide')  ? true : false ;
+
+            if( isHidden ) elemId = elemId.slice( 0 , elemId.lastIndexOf('-hide')) ; // remove signal
+            if(proceeFunc) proceeFunc();
+            targetElement.setAttribute('id', ( isHidden && (event.type != 'mouseleave') )  ? elemId : (elemId +'-hide') );
         }
 
+
+
+        //window features
+        chatSubMenu_ChageName_input.addEventListener('keyup', sendChageNameMessageHanddler);
         function sendChageNameMessageHanddler(e){
             //send 
             if(e.keyCode == 13 && this.value.trim() ){
@@ -128,12 +131,11 @@ function main(){
                 }catch(e){
                     // 如果sendMessge有錯誤就要重新刷新頁面
                     window.location.reload();
-                }
-                subMenuModeChange(e);
+                } 
+                modeChange('chageName',chatMenu_ChageName.doProcess,e);
                 return;
             }
         }
-
 
 
         //send message to pulgin
@@ -327,6 +329,9 @@ function main(){
         }
         
         function modifyMessageHanddler(e){
+            //textarea resize
+            //resizeTextArea.call(this);
+            
             //send 
             if(e.keyCode == 13 && this.value.trim() ){
                 let newMessage = {
@@ -379,6 +384,24 @@ function main(){
              }
         }
 
+        // function resizeTextArea() {
+        //       let str = this.value;
+        //       let cols = this.cols;
+
+        //       let linecount = 0;
+        //       str.split("\n").forEach(){
+
+        //       }
+
+
+        //       .each( function(l) {
+        //           linecount += Math.ceil( l.length / cols ); // Take into account long lines
+        //       })
+        //       this.rows = linecount + 1;
+        // };
+
+
+
         function createMessageDiv(config){
             let message = document.createElement('div');
                 message.setAttribute( 'class' ,'message' );
@@ -429,8 +452,10 @@ function main(){
 };
 
 function dragable (clickEl,dragEl) {
-  var p = get(clickEl);
-  var t = get(dragEl);
+  //var p = get(clickEl);
+  //var t = get(dragEl);
+  var p = clickEl;
+  var t = dragEl;
   var drag = false;
   var mousemoveTemp = null;
   offsetX = 0;

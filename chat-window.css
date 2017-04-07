@@ -12,7 +12,7 @@
         z-index: 2147483647 !important;
 }
 
-#chatRoom-ball{
+#chatRoom-hide{
         display: block !important;
         position: fixed !important;
         bottom: 3px !important;
@@ -25,7 +25,7 @@
         z-index: 2147483647 !important;
 }
 
-#chatRoom-ball:hover{
+#chatRoom-hide:hover{
         position: fixed !important;
         bottom: 3px !important;
         left: 3px !important;
@@ -37,7 +37,7 @@
         z-index: 2147483647 !important;
 }
 
-#chatRoom-ball:active{
+#chatRoom-hide:active{
         position: fixed !important;
         bottom: 3px !important;
         left: 3px !important;
@@ -49,7 +49,7 @@
         z-index: 2147483647 !important;
 }
 
-#chatRoom-ball *{
+#chatRoom-hide *{
     display:none !important;
 }
 
@@ -242,6 +242,7 @@
         font-size: 14px !important;
         width: 100%;
         resize: none !important;
+        background-color: rgba(0, 0, 0, .1) !important;
     	overflow-y: hidden !important;
     	overflow-x: hidden !important;
 }

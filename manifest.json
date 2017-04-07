@@ -6,6 +6,13 @@
   "background": {
     "page":"background.html"
   },
+
+  "icons": { 
+    "16":"Icons/soniko-16.png", 
+    "48":"Icons/soniko-48.png", 
+    "128":"Icons/soniko-128.png" 
+  }, 
+
   "browser_action": {
     "default_icon": "Icons/stop.png",
     "default_title": "Get start!",

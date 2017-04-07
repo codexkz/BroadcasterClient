@@ -3,7 +3,7 @@
 
     let defaultserver={     
         'ip'    : 'localhost',
-        'port'  : '8082'
+        'port'  : '8080'
     };
 
     connectManager = new ConnectManager(defaultserver) ;
