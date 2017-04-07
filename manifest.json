@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Broadcaster",
+  "description": "This extension is for light's broadcast service",
+  "version": "1.0",
+  "background": {
+    "page":"background.html"
+  },
+  "browser_action": {
+    "default_icon": "Icons/stop.png",
+    "default_title": "Get start!",
+    "default_popup": "index.html"
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*/*"],
+      //"css":["chat-window.css"],
+      "js": ["chat-window.js"],
+      "run_at":"document_end" 
+    }
+  ],
+
+  "web_accessible_resources":["video.html","chatroom.html","chat-window.css"],
+
+  "permissions": [
+    "management",
+    "contextMenus",
+    "activeTab",
+    "http://*/*", "https://*/*", "file:///*/*"
+    //"https://ajax.googleapis.com/",
+    //"http://localhost:8082/BroadcasterServer/Connect.do"
+  ]
+}
