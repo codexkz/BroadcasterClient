@@ -178,7 +178,7 @@
 #chatSubMenu-ChageName input{
         width: 100px !important;
         border: 1px solid #ccc !important;
-        padding-left:10px !important;
+        text-align: center !important;
 }
 
 
@@ -187,6 +187,37 @@
         outline: none !important;
         border: 1px solid rgba(255, 100, 0, 0.5) !important;
 }
+
+
+#chatSubMenu-MemberList{
+        position: absolute !important;
+        top: 25px !important;
+        right: -45px !important;
+        font-weight: bold !important;
+        width: 120px !important;
+        padding: 5px 0px !important;
+        border: 1px solid #ccc !important;
+        background: #f1f1f1 !important;
+        text-align: center !important; 
+        color: #666 !important;
+        font-size: 12px !important;
+}
+
+
+#chatSubMenu-MemberList div{
+        display: block;    
+        border-bottom:#f1f1f1 1px solid;
+}
+
+#chatSubMenu-MemberList div:hover{
+        display: block;    
+        background:#ffffff; 
+        border-bottom:#dddddd 1px solid;
+}
+
+
+#chatSubMenu-MemberList-hide *{ display:none !important; }
+
 /* chatArea  */
 
 #chatArea{
@@ -195,6 +226,7 @@
         border: none !important;
         border-color: rgba(29, 49, 91, .01) !important;
         overflow-y: scroll !important;
+        padding-bottom: 5px !important;
 }
 
 #chatArea::-webkit-scrollbar {display:none !important;}
@@ -210,9 +242,15 @@
 
 
 #chatArea  .message{
+        width:inherit !important;
         margin-top:10px !important;
         margin-left:10px !important;
         margin-right:10px !important;
+        border-radius: 8px !important;
+        background-color: rgba(255,255,255,.4) !important;
+        padding: 5px !important;
+        padding-right: 10px !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25)!important;
 }
 
 #chatArea  .message  .sender{
@@ -242,7 +280,7 @@
         font-size: 14px !important;
         width: 100%;
         resize: none !important;
-        background-color: rgba(0, 0, 0, .1) !important;
+        background-color: rgba(0, 0, 0, .05) !important;
     	overflow-y: hidden !important;
     	overflow-x: hidden !important;
 }
@@ -258,9 +296,10 @@
         height: auto !important;
         border: none !important;
         background-color: rgba(29, 49, 91, .05) !important;
-        width: 249px !important;
-        padding-left:10px !important;
-        font-size: 18px !important;
+        width: 239px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        font-size: 17px !important;
         resize: none !important;
     	overflow-y: hidden !important;
     	overflow-x: hidden !important;

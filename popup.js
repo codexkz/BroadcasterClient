@@ -107,11 +107,7 @@ function handleConnect(e){
     let channelPassword = $('#channelPassword').val();
 
     
-    connectManager.connect({ id:channelID ,pw:channelPassword },connectSuccessFuncWraper,connectFailFunc);
-    function connectSuccessFuncWraper(){
-      chatManager.clearChatContainer();
-      connectSuccessFunc();
-    }
+    connectManager.connect({ id:channelID ,pw:channelPassword },connectSuccessFunc,connectFailFunc);
 }
 
 

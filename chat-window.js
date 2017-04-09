@@ -26,9 +26,9 @@ function onReadyStateChangeHanddler(){
 
 //main logic 
 function main(){
-        chrome.runtime.sendMessage({'action': 'getCurrentTabInfo'});
+        chrome.runtime.sendMessage({'action': 'setCurrentTabInfo'});
         
-        var tab = null    ;
+        //var tab = null    ;
         var chatRoom = document.getElementById('chatRoom');
         var chatHeader = document.getElementById('chatHeader');
         var chatArea = document.getElementById('chatArea');
@@ -46,31 +46,34 @@ function main(){
         var chatSubMenu_MemberList = document.getElementById('chatSubMenu-MemberList-hide');
         
         dragable(chatRoom,chatRoom);
-
+        enableCustomPrototypeMethod();
 
         //window mode control 
         chatRoom.addEventListener('dblclick',function(e){modeChange('chatRoom',null,e);});
-        chatHeader.addEventListener('dblclick',function(e){modeChange('chatRoom',null,e);});
-        chatMenu.addEventListener('dblclick',function(e){e.stopPropagation()});
-        chatSubMenu_ChageName.addEventListener('dblclick',function(e){e.stopPropagation()});
-        chatArea.addEventListener('dblclick',function(e){e.stopPropagation()});
-        chatTyping.addEventListener('dblclick',function(e){e.stopPropagation()});
-        chatInputBar.addEventListener('dblclick',function(e){e.stopPropagation()});
+        chatHeader.addEventListener('dblclick',function(e){e.stopPropagation();modeChange('chatRoom',null,e);});
+        chatMenu.addEventListener('dblclick',function(e){e.stopPropagation();});
+        chatSubMenu_ChageName.addEventListener('dblclick',function(e){e.stopPropagation();});
+        chatArea.addEventListener('dblclick',function(e){e.stopPropagation();});
+        chatTyping.addEventListener('dblclick',function(e){e.stopPropagation();});
+        chatInputBar.addEventListener('dblclick',function(e){e.stopPropagation();});
         
         chatMenu.addEventListener('mouseenter', function(e){modeChange('chatMenu',null,e);});
         chatMenu.addEventListener('mouseleave', function(e){modeChange('chatMenu',null,e);});
         chatMenuList.addEventListener('click' , function(e){modeChange('chatMenu',null,e);});
 
         
+        chatSubMenu_ChageName.addEventListener('mouseleave', function(e){modeChange('chageName',chatMenu_ChageName.doProcess,e);});
         chatMenu_ChageName.addEventListener('click', function(e){modeChange('chageName',chatMenu_ChageName.doProcess,e);});
         chatMenu_ChageName.doProcess = function showUserName(){
+                
                 let getUserName = { 'action'      : 'getUserName' };
-                let targetElement = this;
                 chrome.runtime.sendMessage(getUserName,function(response){
-                        targetElement.value = response.data ;
+                        chatSubMenu_ChageName_input.value = response.data ;
                 });
         };
 
+        
+        chatSubMenu_MemberList.addEventListener('mouseleave', function(e){modeChange('memberList',chatMenu_MemberList.doProcess,e);});
         chatMenu_MemberList.addEventListener('click', function(e){modeChange('memberList',chatMenu_MemberList.doProcess,e);});
         chatMenu_MemberList.doProcess = function(){
                 // let getUserName = { 'action'      : 'getMemberList' };
@@ -80,11 +83,8 @@ function main(){
         };
 
        
-        chatSubMenu_ChageName.addEventListener('mouseleave', function(e){modeChange('chageName',chatMenu_ChageName.doProcess,e);});
 
         function modeChange(traget,proceeFunc,event){
-
-            //if(event)event.stopPropagation();
 
             let targetElement ;
             switch(traget){
@@ -114,7 +114,7 @@ function main(){
 
 
         //window features
-        chatSubMenu_ChageName_input.addEventListener('keyup', sendChageNameMessageHanddler);
+        chatSubMenu_ChageName_input.addEventListener('keydown', sendChageNameMessageHanddler);
         function sendChageNameMessageHanddler(e){
             //send 
             if(e.keyCode == 13 && this.value.trim() ){
@@ -136,23 +136,28 @@ function main(){
                 return;
             }
         }
-
+        
 
         //send message to pulgin
-        chatInputBar.addEventListener('keyup',sendNewMessageHanddler);
+        chatInputBar.autoResize();
+        chatInputBar.shiftPressObserve();
+        chatInputBar.addEventListener('keydown',sendNewMessageHanddler);
         function sendNewMessageHanddler(e){
+            if(this.isShiftPress && e.keyCode == 13) return ;
+
             //send 
             if(e.keyCode == 13 && chatInputBar.value.trim() ){
+                e.preventDefault();
                 //console.log('sendMessage : '+ chatInputBar.value);
                 let newMessage = {
-                        'tab'         : tab                   ,
+                        //'tab'         : tab                   ,
                         'action'      : 'newMessage'          ,
                         'actionType'  : 'insert'              ,
                         'target'      : 'all'                 ,
                         'timestamp'   : new Date().getTime()  ,
                         'messageID'   : ''                    ,
                         'messagetype' : 'text'                ,
-                        'message'     : chatInputBar.value.trim()  
+                        'message'     : chatInputBar.value  
                     };  
 
                 let stopTyping = {
@@ -233,9 +238,9 @@ function main(){
                                     for(let i  in elems){
                                         if(elems[i].getAttribute &&　(elems[i].getAttribute('data-timestamp') == request.oldtimestamp) ){
                                             elems[i].setAttribute('data-timestamp',request.timestamp) ;
-                                            elems[i].nextSibling.textContent = request.message ; 
+                                            elems[i].getNextElementSibling().changeChildNodes(request.message.changeStringValueToNodesArray()) ; 
                                             let date = new Date(parseInt(request.timestamp)) ;
-                                            elems[i].nextSibling.nextSibling.textContent =  ' edit - '
+                                            elems[i].getNextElementSibling().getNextElementSibling().textContent =  ' edit - '
                                                                                             +date.getFullYear()+'/'
                                                                                             +(date.getMonth()+1)+'/'
                                                                                             +date.getDate() +' '
@@ -251,12 +256,31 @@ function main(){
                 return;
             }
 
-            if((request.action == "channelInfo")){
-                switch(request.actionType){
+            if((request.actionType == "channelInfo")){
+                switch(request.action){
+                    case "connectSuccessInit":
+                                    let memberArray = request.data.members ;
+                                    for( let i in memberArray){
+                                        let member = document.createElement( 'div' );
+                                            member.setAttribute( 'class' ,'member' );
+                                            member.textContent = memberArray[i].name;
+                                        chatSubMenu_MemberList.appendChild(member);
+                                    }
+                                    break;
+
                     case "memberIn":
+                                    let member = document.createElement('div');
+                                        member.setAttribute( 'class' ,'member' );
+                                        member.textContent = request.data;
+                                    chatSubMenu_MemberList.appendChild(member);
                                     break;
 
                     case "memberOut":
+                                    let elems = chatSubMenu_MemberList.getElementsByClassName('member');
+                                    for(let i  in elems){
+                                        if((elems[i].tagName == 'DIV' || elems[i].tagName == 'div') &&　(elems[i].textContent == request.data) )
+                                            chatSubMenu_MemberList.removeChild(elems[i]);
+                                    };
                                     break;
                                     
                     case "vioceFromTheSky":
@@ -281,20 +305,20 @@ function main(){
                 return;
             }
 
-            if((request.action == "setCurrentTabInfo")){
-                //console.log('get TabId '+request.tab.id);
-                tab = request.tab ; 
-                chrome.runtime.sendMessage({'action': 'getMessageInChatContainer','tab':tab});
-                return;
-            }
+            // if((request.action == "setCurrentTabInfo")){
+            //     //console.log('get TabId '+request.tab.id);
+            //     tab = request.tab ; 
+            //     chrome.runtime.sendMessage({'action': 'getMessageInChatContainer','tab':tab});
+            //     return;
+            // }
 
-            if((request.action == "setMessageInChatContainer")){
-                let messageContainerDom = new DOMParser().parseFromString(request.dom, 'text/html').documentElement.children[1];
-                for (let i = 0; i < messageContainerDom.children.length; i++) {
-                        let senderName = messageContainerDom.children[i].getAttribute('data-sendername');
-                        let message    = messageContainerDom.children[i].textContent;
-                        let status     = messageContainerDom.children[i].getAttribute('data-timestamp');
-                        let messageID  = messageContainerDom.children[i].getAttribute('data-messageID');
+            if((request.action == "setDomInContainer")){
+                let chatContainerDom = new DOMParser().parseFromString(request.chatContainerDom, 'text/html').documentElement.children[1];
+                for (let i = 0; i < chatContainerDom.children.length; i++) {
+                        let senderName = chatContainerDom.children[i].getAttribute('data-sendername');
+                        let message    = chatContainerDom.children[i].textContent;
+                        let status     = chatContainerDom.children[i].getAttribute('data-timestamp');
+                        let messageID  = chatContainerDom.children[i].getAttribute('data-messageID');
                         createMessageDiv({'senderName':senderName,
                                           'message'   :message,
                                           'timestamp' :status,
@@ -302,9 +326,18 @@ function main(){
                                           'style'     :''});
                 }
                 chatArea.scrollTop = chatArea.scrollHeight;
-                return;
+
+
+                let memberContainerDom = new DOMParser().parseFromString(request.memberContainerDom, 'text/html').documentElement.children[1];
+                for (let i = 0; i < memberContainerDom.children.length; i++) {
+                        let member = document.createElement( 'div' );
+                            member.setAttribute( 'class' ,'member' );
+                            member.textContent = memberContainerDom.children[i].getAttribute('data-membername');
+                        chatSubMenu_MemberList.appendChild(member);
+                }
+                
             }
-            
+
             if((request.action =="showNotConnectInfo")){
                 createMessageDiv({'senderName':'System',
                                   'message'   :'Didn\'t Connect To Channel !',
@@ -321,28 +354,84 @@ function main(){
                     if(elems[i].textContent ==( request.senderName+' : ')) 
                         elems[i].textContent = request.data + ' : ';
                 }
+
+                    elems = chatSubMenu_MemberList.getElementsByClassName('member');
+                for(let i  in elems){
+                    if((elems[i].tagName == 'DIV' || elems[i].tagName == 'div') &&　(elems[i].textContent == request.senderName) )
+                        elems[i].textContent = request.data;
+                };
+                return;
             }
 
             if((request.action == "resetMessageInChatContainer")){
                 while (chatArea.firstChild) chatArea.removeChild(chatArea.firstChild);
+                return;
             }
+
+            if((request.action == "resetTypingInTypingContainer")){
+                while (chatTyping.firstChild) chatTyping.removeChild(chatTyping.firstChild);
+                return;
+            }
+
+            if((request.action == "resetMemberInMemberContainer")){
+                while (chatSubMenu_MemberList.firstElementChild.getNextElementSibling() && chatSubMenu_MemberList.firstElementChild.getNextElementSibling().getNextElementSibling()) 
+                    chatSubMenu_MemberList.removeChild(chatSubMenu_MemberList.firstElementChild.getNextElementSibling().getNextElementSibling());
+                return;
+            }
+
         }
         
+        
+      
+        var temp = null;
+        function changeForm(){
+             let nextTag = this.getNextElementSibling() ;
+             if(this.tagName == 'DIV' || this.tagName == 'div'){
+                let newtag = document.createElement('textarea');
+                newtag.setAttribute('rows','1');
+                temp = ''.changeNodesArrayToString(this.childNodes).changeStringValueToNodesArray() ;
+                newtag.value = ''.changeNodesArrayToString(this.childNodes);
+                newtag.addEventListener('keydown',modifyMessageHanddler);
+                newtag.addEventListener('focusout',changeForm);
+                this.parentNode.insertBefore(newtag, nextTag);
+                this.parentNode.removeChild(this);
+                newtag.focus();
+                newtag.autoResize();
+                newtag.shiftPressObserve();
+                return;
+             }
+
+
+             if((this.tagName == 'TEXTAREA' || this.tagName == 'textarea') ){
+                let newtag = document.createElement('div');
+                newtag.setAttribute('class','content');
+                newtag.changeChildNodes(temp) ;
+                newtag.addEventListener('dblclick',changeForm);
+                this.parentNode.insertBefore(newtag, nextTag);
+                this.parentNode.removeChild(this);
+                return;
+             }
+        }
+
+          
         function modifyMessageHanddler(e){
-            //textarea resize
-            //resizeTextArea.call(this);
             
+            //if(this.isShiftPress) return ;
+            if(this.isShiftPress && e.keyCode == 13) return ;
+
             //send 
             if(e.keyCode == 13 && this.value.trim() ){
+                e.preventDefault();
+
                 let newMessage = {
                         'action'      : 'newMessage'          ,
                         'actionType'  : 'modify'              ,
                         'target'      : 'all'                 ,
                         'timestamp'   : new Date().getTime()  ,
-                        'oldtimestamp': this.previousSibling.getAttribute('data-timestamp'),
-                        'messageID'   : this.previousSibling.getAttribute('data-messageID'),      
+                        'oldtimestamp': this.getPreviousElementSibling().getAttribute('data-timestamp'),
+                        'messageID'   : this.getPreviousElementSibling().getAttribute('data-messageID'),      
                         'messagetype' : 'text'                ,
-                        'message'     : this.value.trim()  
+                        'message'     : this.value            ,
                     };  
                 try{
                     chatInputBar.focus();
@@ -352,56 +441,12 @@ function main(){
                     // 如果sendMessge有錯誤就要重新刷新頁面
                     window.location.reload();
                 }
-                chatInputBar.value = '';
                 return;
             }
         }
 
-        var temp ='';
-        function changeForm(){
-             let nextTag = this.nextSibling ;
-             if(this.tagName == 'DIV' || this.tagName == 'div'){
-                //var e = document.getElementsByTagName('span')[0];
-                let newtag = document.createElement('textarea');
-                temp = this.textContent;
-                newtag.value = this.textContent;
-                newtag.addEventListener('keyup',modifyMessageHanddler);
-                newtag.addEventListener('focusout',changeForm);
-                this.parentNode.insertBefore(newtag, nextTag);
-                this.parentNode.removeChild(this);
-                newtag.focus();
-                return;
-             }
 
-             if((this.tagName == 'TEXTAREA' || this.tagName == 'textarea') ){
-                let newtag = document.createElement('div');
-                newtag.setAttribute('class','content');
-                newtag.textContent = temp ;
-                newtag.addEventListener('dblclick',changeForm);
-                this.parentNode.insertBefore(newtag, nextTag);
-                this.parentNode.removeChild(this);
-                return;
-             }
-        }
-
-        // function resizeTextArea() {
-        //       let str = this.value;
-        //       let cols = this.cols;
-
-        //       let linecount = 0;
-        //       str.split("\n").forEach(){
-
-        //       }
-
-
-        //       .each( function(l) {
-        //           linecount += Math.ceil( l.length / cols ); // Take into account long lines
-        //       })
-        //       this.rows = linecount + 1;
-        // };
-
-
-
+        //common methods 
         function createMessageDiv(config){
             let message = document.createElement('div');
                 message.setAttribute( 'class' ,'message' );
@@ -413,7 +458,7 @@ function main(){
                 sender.textContent = config.senderName +' : ';
             let content = document.createElement('div');
                 content.setAttribute( 'class' ,'content' );
-                content.textContent = config.message ;
+                content.changeChildNodes(config.message.changeStringValueToNodesArray());
             if(config.timestamp)content.addEventListener('dblclick',changeForm);
             let status = document.createElement('div');
                 status.setAttribute( 'class' ,'status' );
@@ -452,24 +497,22 @@ function main(){
 };
 
 function dragable (clickEl,dragEl) {
-  //var p = get(clickEl);
-  //var t = get(dragEl);
-  var p = clickEl;
-  var t = dragEl;
-  var drag = false;
-  var mousemoveTemp = null;
-  offsetX = 0;
-  offsetY = 0;
+    //var p = get(clickEl);
+    //var t = get(dragEl);
+    var p = clickEl;
+    var t = dragEl;
+    var drag = false;
+    var mousemoveTemp = null;
+    offsetX = 0;
+    offsetY = 0;
 
-  if (t) {
-    var move = function (x,y) {
-        let style   = window.getComputedStyle(t,null);
-        let left    = (parseInt(style.getPropertyValue('left'))   + x ) + "px";
-        let bottom  = (parseInt(style.getPropertyValue('bottom')) - y ) + "px";
-        t.style.cssText += '; ' + 'left : ' + left + ' !important' ; // to append
-        t.style.cssText += '; ' + 'bottom : ' + bottom + ' !important' ; // to append
-        //style.setProperty('left'  , left    , 'important');
-        //style.setProperty('bottom', bottom  , 'important');
+    if (t) {
+        var move = function (x,y) {
+            let style   = window.getComputedStyle(t,null);
+            let left    = (parseInt(style.getPropertyValue('left'))   + x ) + "px";
+            let bottom  = (parseInt(style.getPropertyValue('bottom')) - y ) + "px";
+            t.style.cssText += '; ' + 'left : ' + left + ' !important' ; // to append
+            t.style.cssText += '; ' + 'bottom : ' + bottom + ' !important' ; // to append
     }
 
     var mouseMoveHandler = function (e) {
@@ -507,25 +550,25 @@ function dragable (clickEl,dragEl) {
     }
 
     var stop_drag = function () {
-      drag=false;      
+        drag=false;      
 
-      // restore previous mousemove event handler if necessary:
-      if (mousemoveTemp) {
-        document.body.onmousemove = mousemoveTemp;
-        mousemoveTemp = null;
-      }
-      return false;
-    }
-    p.onmousedown = start_drag;
-    p.onmouseup = stop_drag;
-  };
+        // restore previous mousemove event handler if necessary:
+        if (mousemoveTemp) {
+            document.body.onmousemove = mousemoveTemp;
+            mousemoveTemp = null;
+        }
+        return false;
+        }
+        p.onmousedown = start_drag;
+        p.onmouseup = stop_drag;
+    };
 
-  function get (el) {
+    function get (el) {
         if (typeof el == 'string') return document.getElementById(el);
         return el;
-  }
+    }
 
-  function mouseX (e) {
+    function mouseX (e) {
         if (e.pageX) {
             return e.pageX;
         }
@@ -535,9 +578,9 @@ function dragable (clickEl,dragEl) {
                                 document.body.scrollLeft);
         }
         return null;
-   }
+    }
 
-   function mouseY (e) {
+    function mouseY (e) {
         if (e.pageY) {
             return e.pageY;
         }
@@ -550,9 +593,88 @@ function dragable (clickEl,dragEl) {
     }   
 }
 
+function enableCustomPrototypeMethod(){
+    
+
+    HTMLElement.prototype.getNextElementSibling = function () {
+        while (this && this.nextSibling ) 
+            return (this.nextSibling.nodeType == 1) ? this.nextSibling : undefined ;
+    }
+
+    HTMLElement.prototype.getPreviousElementSibling = function () {
+        while (this && this.previousSibling ) 
+            return (this.previousSibling.nodeType == 1) ? this.previousSibling : undefined ;
+    }
+
+    HTMLTextAreaElement.prototype.autoResize = function  () {
+
+        //let fontSize = parseFloat(window.getComputedStyle(this, null).getPropertyValue('font-size'));
+        let textarea = this ;
+        function resize () {
+            textarea.style.height = 'auto'; // let scrollHeight recompute
+            textarea.style.height = textarea.scrollHeight+'px';
+        }
+
+        this.style.height = this.scrollHeight+'px';
+        this.addEventListener('input', resize, false);
+        this.focus();
+        return this;
+    }
+
+    HTMLTextAreaElement.prototype.isShiftPress = false ; 
+    HTMLTextAreaElement.prototype.shiftPressObserve = function(){
+        this.addEventListener('keydown',function(e){
+             if(e.keyCode == 16) this.isShiftPress = true ;
+        });
+
+        this.addEventListener('keyup',function(e){
+             if(e.keyCode == 16) this.isShiftPress = false ;
+        });
+    } 
+    
+    // HTMLTextAreaElement.prototype.addText = function(position,text){
+    //     let tempStart = this.value.substring(0,position);
+    //     let tempEnd   = this.value.substring(position,this.value.length);
+    //     this.value = tempStart + text + tempEnd;
+    //     position++ ;
+    //     this.selectionStart = position ;
+    //     this.selectionEnd   = position ;
+    //     this.style.height = this.scrollHeight+'px';
+    // }
+
+    String.prototype.changeNodesArrayToString = function(nodes){
+        let  str ='';
+        for(let i=0 ; i < nodes.length ; i++  ){
+            if(nodes[i].nodeType == 1 )   str += '\n' ;
+            else str += nodes[i].textContent ;
+        }
+        return str ;
+    }
 
 
+    String.prototype.changeStringValueToNodesArray = function(){
+        let outer = this.split('\n');
+        let nodesArray = [];
+        for (let i  in outer){
+            let inner = outer[i].split(' ');
+            for(let j in inner){
+                nodesArray.push( document.createTextNode(inner[j])) ;
+                if(inner[j] != ' ' && j != (inner.length -1) )
+                        nodesArray.push( document.createTextNode('\u00A0')) ;
+            }
+            if(i != (outer.length -1) )
+                nodesArray.push( document.createElement('br') );
+        } 
+        return nodesArray ;
+    }
 
+
+    HTMLDivElement.prototype.changeChildNodes = function (nodes) {
+         while (this.firstChild)  this.removeChild(this.firstChild);
+         for(let i=0 ; i < nodes.length  ; i++  ) this.appendChild( nodes[i] );   
+    }
+
+}
 
 // function str2DOMElement(htmlStr) {
 //     let domObject = stringObject.split(separator,howmany)

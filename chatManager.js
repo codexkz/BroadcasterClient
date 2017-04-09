@@ -10,10 +10,12 @@
         //handdle all message from chat-window
         chrome.runtime.onMessage.addListener(chatMessageSendHanddler);
         function chatMessageSendHanddler(request, sender, sendResponse){
-            if(request.action=='getCurrentTabInfo'){    
-                console.log('new Tab create ' + sender.tab.id );
+            
+            if(request.action=='setCurrentTabInfo'){
                 tabMap.set( sender.tab.id , sender.tab ) ;
-                chrome.tabs.sendMessage( sender.tab.id , { 'action' : 'setCurrentTabInfo' , 'tab' : sender.tab });
+                console.log(memberContainer.innerHTML);
+                chrome.tabs.sendMessage( sender.tab.id , { 'action' : 'setDomInContainer' , 'chatContainerDom' : chatContainer.innerHTML , 'memberContainerDom' : memberContainer.innerHTML });
+                // chrome.tabs.sendMessage( sender.tab.id , { 'action' : 'setCurrentTabInfo' , 'tab' : sender.tab });
                 return;
             } 
 
@@ -88,10 +90,10 @@
                 }
             }
 
-            if(request.action =='getMessageInChatContainer' ){
-                chrome.tabs.sendMessage( sender.tab.id , { 'action' : 'setMessageInChatContainer' , 'dom' : chatContainer.innerHTML });
-                return;
-            }
+            // if(request.action =='getMessageInChatContainer' ){
+            //     chrome.tabs.sendMessage( sender.tab.id , { 'action' : 'setMessageInChatContainer' , 'dom' : chatContainer.innerHTML });
+            //     return;
+            // }
 
             if(request.action =='getUserName' ){
                 sendResponse({'data':connectManager.getUserName()});
@@ -147,26 +149,48 @@
                             $(this).attr('data-sendername',newJsonMessge.messageBody.data);
                     });
 
+                    $(memberContainer).find('[data-membername="'+ senderName +'"]').each(function(){
+                            $(this).attr('data-membername',newJsonMessge.messageBody.data);
+                    });
                     tabMap.forEach(function(value, key, map){
                         chrome.tabs.sendMessage( key , newJsonMessge.messageBody );
-                     });
+                    });
                     return;
                  }
             }
 
             if(newJsonMessge.messageBody.actionType === 'channelInfo'){
                 switch(newJsonMessge.messageBody.action){
+                    case "connectSuccessInit":
+                                let memberArray = newJsonMessge.messageBody.data.members ;
+                                for( let i in memberArray){
+                                    let member = document.createElement( 'div' );
+                                        member.setAttribute( 'data-membername'  ,  memberArray[i].name );
+                                    $(memberContainer).append(member);
+                                }
+                                tabMap.forEach(function(value, key, map){
+                                        chrome.tabs.sendMessage( key ,newJsonMessge.messageBody );
+                                });
+                                break;
+
                     case "memberIn":
-
-                                    break;
-
+                                let member = document.createElement( 'div' );
+                                    member.setAttribute( 'data-membername'  ,  newJsonMessge.messageBody.data  );
+                                    //member.setAttribute( 'data-timestamp'   ,  newJsonMessge.messageBody.timestamp   );
+                                $(memberContainer).append(member);
+                                tabMap.forEach(function(value, key, map){
+                                        chrome.tabs.sendMessage( key , newJsonMessge.messageBody );
+                                });
+                                break;
                     case "memberOut":
-
-                                    break;
-                                    
+                                $(typingContainer).find('[data-membername="'+ newJsonMessge.messageBody.data +'"]').remove();
+                                tabMap.forEach(function(value, key, map){
+                                        chrome.tabs.sendMessage( key , newJsonMessge.messageBody );
+                                });
+                                break;
                     case "vioceFromTheSky":
                     
-                                    break;
+                                break;
                 }
                 return;
             }
@@ -207,7 +231,7 @@
                      let timestampTamp = 0;
                      let target ;
                      let typingCount = 0 ;
-                     console.log(typingCount);
+                     //console.log(typingCount);
                      $(typingContainer).children('div').each(function(){
                             let timestamp  = parseInt($(this).attr('data-timestamp'));
                             typingCount++;
@@ -216,7 +240,7 @@
                                 target = $(this) ;
                             }
                      });
-                     console.log("after"+typingCount);
+                     //console.log("after"+typingCount);
                      tabMap.forEach(function(value, key, map){
                         chrome.tabs.sendMessage( key , { 'action' : 'renewTyping' , 
                                                          'senderName' : $(target).attr('data-sendername') ,
@@ -227,7 +251,7 @@
 
             if(newJsonMessge.messageBody.actionType === 'insert'){
                  let elem = document.createElement( 'div' );
-                     console.log(newJsonMessge.messageBody);
+                     //console.log(newJsonMessge.messageBody);
                      //elem.setAttribute( 'data-sender'    ,  newJsonMessge.messgeBody.sender       );
                      elem.setAttribute( 'data-sendername'  ,  newJsonMessge.messageBody.senderName  );
                      elem.setAttribute( 'data-action'      ,  newJsonMessge.messageBody.action      );
@@ -271,7 +295,23 @@
             return;
         }
 
+        this.clearTypingContainer = function(){
+            $(typingContainer).empty();
+            tabMap.forEach(function(value, key, map){
+                    chrome.tabs.sendMessage( key ,  { 'action' : 'resetTypingInTypingContainer'});
+            });
+            return;
+        }
 
+        this.clearMemberContainer = function(){
+            $(memberContainer).empty();
+            tabMap.forEach(function(value, key, map){
+                    chrome.tabs.sendMessage( key ,  { 'action' : 'resetMemberInMemberContainer'});
+            });
+            return;
+        }
+
+        
     }
 
 })();

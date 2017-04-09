@@ -3,7 +3,7 @@
 
     let defaultserver={     
         'ip'    : 'localhost',
-        'port'  : '8080'
+        'port'  : '8082'
     };
 
     connectManager = new ConnectManager(defaultserver) ;
@@ -48,13 +48,19 @@
 
             function connectSuccessFunc(responseStr){
                 let response  = JSON.parse(responseStr) ;
-                if(response.retcode == '100'){
-                    userUUID  = response.uuid ;
-                    userName  = response.name ;
-                    console.log("Get UUID : "+userUUID); 
+                console.log(response);
+                if(response.messageBody.data.uuid){
+                    userUUID  = response.messageBody.data.uuid ;
+                    userName  = response.messageBody.data.name ;
+                    console.log("Get UUID : "+userUUID);
+                    response.messageBody.data.uuid = '';
                     connectManager.createControlerSocket(successCallback , errorCallback);
                     connectManager.endSocketReconnector();
                     connectManager.startSocketReconnector(successCallback , errorCallback);
+                    chatManager.clearChatContainer();
+                    chatManager.clearTypingContainer();    
+                    chatManager.clearMemberContainer();
+                    chatManager.newMessage(response);
                     return;
                 }
 
