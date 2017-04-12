@@ -2,8 +2,8 @@
 (function(){
 
     let defaultserver={     
-        'ip'    : 'localhost',
-        'port'  : '8082'
+        'ip'    : '10.1.16.115',
+        'port'  : '8080'
     };
 
     connectManager = new ConnectManager(defaultserver) ;
@@ -114,19 +114,24 @@
 
 
         this.createControlerSocket = function (successCallback , errorCallback){
-            controlerSocket = new ControlerSocket( wsUri +'/ControlerSockect/'+ userUUID + '/' + channelID + '/' + channelPassword ,successCallback , errorCallback );
+            controlerSocket = new ControlerSocket( wsUri +'/ControlerSockect/'+ encodeURI(userUUID) + '/' + encodeURI(channelID)+ '/' + encodeURI(channelPassword) ,successCallback , errorCallback );
+            console.log(channelID+' : '+encodeURI(channelID));
         };
 
         this.createChatSocket = function (){
-            chatSocket      = new ChatSocket( wsUri +'/ChatSocket/'+ userUUID + '/' + channelID + '/' + channelPassword  );
+            chatSocket      = new ChatSocket( wsUri +'/ChatSocket/'+ encodeURI(userUUID) + '/' + encodeURI(channelID) + '/' + encodeURI(channelPassword)  );
         };
 
-        this.createMediaSendSocket = function (){
-            mediaSendSocketArray.push( new MediaSendSocket( wsUri +'/MediaSendSocket/'+ userUUID + '/' + channelID + '/' + channelPassword  ) );
+        this.createMediaSendSocket = function (mediasockpairid){
+            let mediaSendSocket = new MediaSendSocket( wsUri +'/MediaSocket/'+ encodeURI(userUUID) + '/' + encodeURI(channelID) + '/' + encodeURI(channelPassword) + '/' + 'sender' + '/' + mediasockpairid );
+            mediaSendSocket.mediasockpairid = mediasockpairid ;
+            mediaSendSocketArray.push( mediaSendSocket );
         };
 
-        this.createMediaReceiveSocket = function (){
-            mediaReceiveSocketArray.push( new MediaReceiveSocket( wsUri +'/MediaReceiveSocket/'+ userUUID + '/' + channelID + '/' + channelPassword  ) );
+        this.createMediaReceiveSocket = function (mediasockpairid){
+            let mediaReceiveSocket = new MediaReceiveSocket( wsUri +'/MediaSocket/'+ encodeURI(userUUID) + '/' + encodeURI(channelID) + '/' + encodeURI(channelPassword) + '/' + 'receiver' + '/' + mediasockpairid )
+            mediaReceiveSocket.mediasockpairid = mediasockpairid ;
+            mediaReceiveSocketArray.push( mediaReceiveSocket );
         };
 
 
@@ -160,11 +165,15 @@
         }
 
         this.getUserName =function(){
-            return userName;
+            return userName ;
         }
 
         this.setUserName =function(newName){
             userName = newName ;
+        }
+
+        this.getChannelID =function(){
+            return channelID ;
         }
 
     }
@@ -198,7 +207,12 @@ function ControlerSocket(connectURL, successCallback , errorCallback){
                     connectManager.setUserName(responseJson.messageBody.data);
                 chatManager.newMessage(responseJson);
                 break;
-            case '':
+            case 'openMediaSocket':
+                let mediaSocketPairID = responseJson.messageBody.mediaSocketPairID ;
+                if(responseJson.userName == connectManager.getUserName()) //MediaSenfer
+                    connectManager.createMediaSendSocket(mediaSocketPairID);
+                else                                                      //MediaReceiver
+                    connectManager.createMediaReceiveSocket(mediaSocketPairID);
                 break;
             default:
         }
@@ -206,7 +220,7 @@ function ControlerSocket(connectURL, successCallback , errorCallback){
     function onClose(e){
         console.log('ControlerSocket:ConnectClose , Retcode : ' + e.code + ' , Retmsg : ' + e.reason );
         if(e.reason = "VerificationError" ) connectManager.endSocketReconnector();
-        if(connectManager.getChatSocket().readyState==1) connectManager.getChatSocket().close();
+        if(connectManager.getChatSocket().readyState==1) connectManager.getChatSocket().close(e);
         errorCallback();
     };  
     function onError(){
@@ -240,8 +254,8 @@ function ChatSocket(connectURL){
         chatManager.newMessage(responseJson);
     };  
 
-    function onClose(){
-        console.log('ChatSocket:ConnectClose');
+    function onClose(e){
+        console.log('ChatSocket:ConnectClose , Retcode : ' + e.code + ' , Retmsg : ' + e.reason );
     };  
     function onError(){
         console.log('ChatSocket:ConnectError');
@@ -249,20 +263,70 @@ function ChatSocket(connectURL){
     return instance;  
 }
 
+//Upload Media  & Receive Commnad 
 function MediaSendSocket(connectURL){
     let instance = new WebSocket(connectURL);  
         instance.onopen = onOpen ;
         instance.onmessage = onMessage ;
         instance.onclose = onClose ;
         instance.onerror = onError ; 
+
+    instance.doSend = function (messageBody){
+        // let message = connectManager.getMessageHeader();
+        //     message.messageBody = messageBody ;
+        //     message.messageBody.senderName = message.userName;
+        // instance.send(JSON.stringify(message));
+    };
+
+
+    function onOpen(){
+        console.log('MediaSendSocket:ConnectSuccess ,' + instance.mediasockpairid );
+    };
+
+    function onMessage(response){
+        // let responseJson = JSON.parse(response.data);
+        // chatManager.newMessage(responseJson);
+    };  
+
+    function onClose(e){
+        console.log('MediaSendSocket:ConnectClose ,' + instance.mediasockpairid + ', Retcode : ' + e.code + ' , Retmsg : ' + e.reason);
+    };  
+    function onError(){
+        console.log('MediaSendSocket:ConnectError ,' + instance.mediasockpairid );
+    };    
     return instance;  
 }
 
+//Download Media  & Send Commnad 
 function MediaReceiveSocket(connectURL){
     let instance = new WebSocket(connectURL);  
         instance.onopen = onOpen ;
         instance.onmessage = onMessage ;
         instance.onclose = onClose ;
         instance.onerror = onError ;
+
+    instance.doSend = function (messageBody){
+        // let message = connectManager.getMessageHeader();
+        //     message.messageBody = messageBody ;
+        //     message.messageBody.senderName = message.userName;
+        // instance.send(JSON.stringify(message));
+    };
+
+
+    function onOpen(){
+        console.log('MediaReceiveSocket:ConnectSuccess ,' + instance.mediasockpairid );
+    };
+
+    function onMessage(response){
+        // let responseJson = JSON.parse(response.data);
+        // chatManager.newMessage(responseJson);
+    };  
+
+    function onClose(e){
+        console.log('MediaReceiveSocket:ConnectClose ,' + instance.mediasockpairid + ', Retcode : ' + e.code + ' , Retmsg : ' + e.reason);
+    };  
+    function onError(){
+        console.log('MediaReceiveSocket:ConnectError ,' + instance.mediasockpairid );
+    };    
     return instance;  
 }
