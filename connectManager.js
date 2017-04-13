@@ -2,8 +2,8 @@
 (function(){
 
     let defaultserver={     
-        'ip'    : '10.1.16.115',
-        'port'  : '8080'
+        'ip'    : 'localhost',
+        'port'  : '8082'
     };
 
     connectManager = new ConnectManager(defaultserver) ;

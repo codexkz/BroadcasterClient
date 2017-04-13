@@ -82,6 +82,59 @@ function hiddenNotOpenAudioTag(trgetDiv){
     }
 })(); 
 
+// var htmlFileURL = chrome.runtime.getURL('mediaPlayer.html');
+// var htmlString = '' ;
+// var xhr = new XMLHttpRequest();
+//     xhr.open('POST', htmlFileURL ,  true );
+//     xhr.onreadystatechange = onReadyStateChangeHanddler ;
+//     xhr.send();
+// function onReadyStateChangeHanddler(){
+//     if (xhr.readyState === 4 && xhr.status == 200) {
+//         htmlString = xhr.responseText;
+//         let doc = new DOMParser().parseFromString(htmlString, 'text/html');
+//         document.body.appendChild(doc.all[0].getElementsByClassName('chatRoom')[0]);    
+//         // document.body.appendChild(document.importNode(doc.getElementsByTagName('div')[0],true));
+//         main();
+//     }
+// }
+
+
+
+jQuery.fn.extend(
+  {
+      createMediaPlayer:function(){
+          var mediaPlayer = document.createElement('div');
+              mediaPlayer.setAttribute('class','mediaPlayer');
+              mediaPlayer.setAttribute('height','200px');
+              mediaPlayer.setAttribute('style','displays:none;');
+          $(this).append(mediaPlayer);
+          $(this).on('mouseenter',changeHightWrapper);
+          $(this).on('mouseleave',changeHightWrapper);
+          // for(var i in this)
+          //   console.log(i+' : '+this[i])
+          var originHeight = $(this).css('height');//parseInt( window.getComputedStyle(this,null).getPropertyValue('height'));
+          $(this).attr('style',  'height:'+(originHeight)+'px;');
+          console.log(originHeight);
+          function changeHightWrapper(){
+              changeHight(originHeight);
+          }
+      } 
+  }
+);
+
+function changeHight(originHeight){
+   console.log($(this).css('height') +' : '+ originHeight);
+   if( $(this).css('height') == originHeight){
+     this.setAttribute('style', 'height:'+(originHeight+200)+'px;');
+     //$(this).find('.mediaPlayer').attr('style','displays:block;');
+     return ;
+   }else{
+      //$(this).css('height', originHeight );
+      this.setAttribute('style', 'height:'+(originHeight)+'px;');
+     //$(this).find('.mediaPlayer').attr('style','displays:none;');
+     return ;
+   }
+}
 
 /*
 var reader;
@@ -93,6 +146,11 @@ function getMusicBox(trgetDiv){
     while (trgetDiv.firstChild) trgetDiv.removeChild(trgetDiv.firstChild);
     var cln = bgPage.$(bgMusicBox).clone(true,true);
     $(trgetDiv).append(cln);
+    $(cln).find('[data-type="File"]').each(function(){ 
+        // for(var i in this)
+        //   console.log(i+' : '+this[i]);
+        $(this).createMediaPlayer.call(this);
+    });
 }
 
 

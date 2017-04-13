@@ -183,18 +183,8 @@
   }
  
 
- .directoryEntry[data-type=File]{
-    background-color: honeydew;
-    border-color: honeydew;
-    border-bottom: darkgrey;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 5px;
-  }
 
-
-  .directoryEntry[data-type=Directory]:hover,
-  .directoryEntry[data-type=File]:hover{
+  .directoryEntry[data-type=Directory]:hover{
     background-color: lavenderblush;
     border-color: lavenderblush;
     border-bottom: darkgrey;
@@ -208,8 +198,7 @@
     color: dimgrey;
   }
 
-  .directoryEntry[data-type=Directory]:active,
-  .directoryEntry[data-type=File]:active{
+  .directoryEntry[data-type=Directory]:active{
     background-color: lavenderblush;
     border-color: lavenderblush;
     border-top: white;
@@ -222,8 +211,44 @@
     font-family: Calibri;
     color: dimgrey;
   }
+ 
+.directoryEntry[data-type=File]{
+    background-color: honeydew;
+    border-color: honeydew;
+    border-bottom: darkgrey;
+    transition: height 0.35s ease;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
 
+.directoryEntry[data-type=File]:hover{
+    background-color: lavenderblush;
+    border-color: lavenderblush;
+    border-bottom: darkgrey;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px 0px;
+    padding: 5px 0px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
 
+.directoryEntry[data-type=File]:active{
+    background-color: lavenderblush;
+    border-color: lavenderblush;
+    border-top: white;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px 0px;
+    padding: 5px 0px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+  }
 
 input{
   border-color: darkgrey;
