@@ -67,7 +67,7 @@ function hiddenNotOpenAudioTag(trgetDiv){
             hiddenNotOpenAudioTag(popPlayBox); 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
             if(controlerSocket && controlerSocket.readyState ==3)  connectFailFunc();
-            $('#channelID').val(connectManager.getChannelID());
+            $('#channelID').val( (connectManager.getChannelID()=='default') ? '' : connectManager.getChannelID() );
 
             // Change button style become defualt
             $('#channelID').on('keyup',connectPreFunc);

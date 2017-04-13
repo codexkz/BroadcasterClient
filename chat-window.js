@@ -31,6 +31,7 @@ function main(){
         //var tab = null    ;
         var chatRoom = document.getElementById('chatRoom');
         var chatHeader = document.getElementById('chatHeader');
+        var chatTitle = document.getElementById('chatTitle');
         var chatArea = document.getElementById('chatArea');
         var chatTyping = document.getElementById('chatTyping');
         var chatInputBar = document.getElementById('chatInputBar');

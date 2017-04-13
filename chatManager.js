@@ -168,6 +168,7 @@
                                         member.setAttribute( 'data-membername'  ,  memberArray[i].name );
                                     $(memberContainer).append(member);
                                 }
+                                //newJsonMessge.messageBody.channelID = newJsonMessge.channelID ; // Only this will add channelID info to messageBody
                                 tabMap.forEach(function(value, key, map){
                                         chrome.tabs.sendMessage( key ,newJsonMessge.messageBody );
                                 });
@@ -176,7 +177,6 @@
                     case "memberIn":
                                 let member = document.createElement( 'div' );
                                     member.setAttribute( 'data-membername'  ,  newJsonMessge.messageBody.data  );
-                                    //member.setAttribute( 'data-timestamp'   ,  newJsonMessge.messageBody.timestamp   );
                                 $(memberContainer).append(member);
                                 tabMap.forEach(function(value, key, map){
                                         chrome.tabs.sendMessage( key , newJsonMessge.messageBody );

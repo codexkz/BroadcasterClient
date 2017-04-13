@@ -39,6 +39,7 @@
             function onReadyStateChange() {
                   if (xhr.readyState === 4 && xhr.status == 200) {
                         connectSuccessFunc(xhr.responseText);
+                        console.log(xhr.responseText);
                   }
                   if (xhr.readyState === 4 && xhr.status != 200) {
                         connectErrorFunc('{ "retcode" : "' + xhr.status  + '", "retmsg" : "' + xhr.statusText + '" }');
@@ -49,7 +50,7 @@
             function connectSuccessFunc(responseStr){
                 let response  = JSON.parse(responseStr) ;
                 console.log(response);
-                if(response.messageBody.data.uuid){
+                if(response.retcode == "100"){
                     userUUID  = response.messageBody.data.uuid ;
                     userName  = response.messageBody.data.name ;
                     console.log("Get UUID : "+userUUID);
@@ -115,7 +116,6 @@
 
         this.createControlerSocket = function (successCallback , errorCallback){
             controlerSocket = new ControlerSocket( wsUri +'/ControlerSockect/'+ encodeURI(userUUID) + '/' + encodeURI(channelID)+ '/' + encodeURI(channelPassword) ,successCallback , errorCallback );
-            console.log(channelID+' : '+encodeURI(channelID));
         };
 
         this.createChatSocket = function (){
