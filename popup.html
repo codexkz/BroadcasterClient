@@ -1,0 +1,53 @@
+<!doctype html>
+<html >
+  <link rel="stylesheet" type="text/css" href="popup.css">
+  <link rel="stylesheet" type="text/css" href="mediaPlayer.css">
+<!-- <link rel='stylesheet' href='./perfect-scrollbar/css/perfect-scrollbar.min.css' /> -->
+<!--   <script src=subclass.js></script> -->
+
+  <body >
+    <div style="text-align: center;">
+        <!--Channel-->
+        <div  id="channelConfigWindow" style="height:50px;">
+              <div style="float: left;height:50px;width:70%;">
+                  <div  style="width:100%;height: 25px;line-height: 25px;">
+                       <div  style="float:left;margin-left: 10px;">Channel</div>
+                       <div  style="float:right"><input id="channelID" style="width:100px;text-align: center;" type="text"/></div>
+                  </div>
+                  <div  style="width:100%;height: 25px;line-height: 25px;">
+                       <div  style="float:left;margin-left: 10px;">Password</div>
+                       <div  style="float:right"><input id="channelPassword" style="width:100px;text-align: center;" type="text"/></div>
+                  </div>
+              </div>
+              <div style="float: left;height:50px;width:30%;line-height:26px;">
+                   <label for="connect"><div id="connectLabel" class="connectButton">Connect</div></label>
+                   <button type="button" id="connect"></button>
+              </div>
+        </div>
+        <!--Directorylist-->
+        <input type="file" id="filepicker" webkitdirectory directory/>
+        <label for="filepicker"><div id="filepickerDiv" class="directoryEntry">Let's Create Directory!</div></label>
+        
+        <div id="directoryEntryWindow">
+            <div  id="directoryEntryView"></div>
+        </div>
+        <!--Playlist-->
+        <div id="audioWindow-hide">
+            <div style="height:25px;line-height: 25px;">Playlist</div>
+            <div  id="audioView"></div>
+        </div>
+    </div>
+
+     <!--<div id="progress_bar"><div class="percent">0%</div></div>-->
+     <!--<ul id="listing"></ul>-->
+  </body>
+
+  
+  <script src=jquery-3.1.1.slim.min.js></script>
+  <script src=gradientsDirectory.js></script>
+  <!--<script src=custom-scrollbar.js></script>-->
+  <script src=popup.js></script>
+
+</html>
+
+

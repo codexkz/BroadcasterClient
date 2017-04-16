@@ -7,7 +7,7 @@ var style = document.createElement('link');
 (document.head||document.documentElement).appendChild(style);
 
 //html injection
-var htmlFileURL = chrome.runtime.getURL('chatroom.html');
+var htmlFileURL = chrome.runtime.getURL('chat-window.html');
 var htmlString = '' ;
 var xhr = new XMLHttpRequest();
     xhr.open('POST', htmlFileURL ,  true );

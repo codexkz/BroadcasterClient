@@ -82,59 +82,88 @@ function hiddenNotOpenAudioTag(trgetDiv){
     }
 })(); 
 
-// var htmlFileURL = chrome.runtime.getURL('mediaPlayer.html');
-// var htmlString = '' ;
-// var xhr = new XMLHttpRequest();
-//     xhr.open('POST', htmlFileURL ,  true );
-//     xhr.onreadystatechange = onReadyStateChangeHanddler ;
-//     xhr.send();
-// function onReadyStateChangeHanddler(){
-//     if (xhr.readyState === 4 && xhr.status == 200) {
-//         htmlString = xhr.responseText;
-//         let doc = new DOMParser().parseFromString(htmlString, 'text/html');
-//         document.body.appendChild(doc.all[0].getElementsByClassName('chatRoom')[0]);    
-//         // document.body.appendChild(document.importNode(doc.getElementsByTagName('div')[0],true));
-//         main();
-//     }
-// }
+
+// Change playlist mode 
+$('#audioWindow-hide').on('click',changeMode);
+$('#audioWindow-hide').on('mouseleave',changeMode);
+
+function changeMode(e){
+    if(($(this).attr('id')=='audioWindow-hide') &&  (e.type != 'mouseleave')){
+         $(this).attr('id','audioWindow');
+         return;
+    }
+    if($(this).attr('id')=='audioWindow'){
+         $(this).attr('id','audioWindow-hide');
+         return;
+    }
+}
 
 
-
-jQuery.fn.extend(
-  {
-      createMediaPlayer:function(){
-          var mediaPlayer = document.createElement('div');
-              mediaPlayer.setAttribute('class','mediaPlayer');
-              mediaPlayer.setAttribute('height','200px');
-              mediaPlayer.setAttribute('style','displays:none;');
-          $(this).append(mediaPlayer);
-          $(this).on('mouseenter',changeHightWrapper);
-          $(this).on('mouseleave',changeHightWrapper);
-          // for(var i in this)
-          //   console.log(i+' : '+this[i])
-          var originHeight = $(this).css('height');//parseInt( window.getComputedStyle(this,null).getPropertyValue('height'));
-          $(this).attr('style',  'height:'+(originHeight)+'px;');
-          console.log(originHeight);
-          function changeHightWrapper(){
-              changeHight(originHeight);
+function setMediaPlayerShowAffect(elem){
+          elem.addEventListener('mouseenter',changeHightWrapper);
+          elem.addEventListener('mouseleave',changeHightWrapper);
+          var originHeight = $(elem).css('height');
+          $(elem).css('height',originHeight);
+          function changeHightWrapper(e){
+              changeHight.call(elem,e,originHeight);
           }
-      } 
-  }
-);
+ } 
 
-function changeHight(originHeight){
-   console.log($(this).css('height') +' : '+ originHeight);
-   if( $(this).css('height') == originHeight){
-     this.setAttribute('style', 'height:'+(originHeight+200)+'px;');
-     //$(this).find('.mediaPlayer').attr('style','displays:block;');
-     return ;
+function changeHight(e,originHeight){
+   if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
+         $(this).css('height',(parseInt(originHeight) + 200) + 'px');
+         $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+            $(this).find('.mediaPlayer').css('display','block');
+         });
+         return ;
    }else{
-      //$(this).css('height', originHeight );
-      this.setAttribute('style', 'height:'+(originHeight)+'px;');
-     //$(this).find('.mediaPlayer').attr('style','displays:none;');
-     return ;
+         $(this).css('height',originHeight);
+         $(this).find('.mediaPlayer').css('display','none');
+         $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+            $(this).find('.mediaPlayer').css('display','none');
+         });
+         return ;
    }
 }
+
+
+// jQuery.fn.extend(
+//   {
+//       createMediaPlayer:function(){
+//           var mediaPlayer = document.createElement('div');
+//               mediaPlayer.setAttribute('class','mediaPlayer');
+//               mediaPlayer.setAttribute('height','200px');
+//               mediaPlayer.setAttribute('style','displays:none;');
+//           $(this).append(mediaPlayer);
+//           $(this).on('mouseenter',changeHightWrapper);
+//           $(this).on('mouseleave',changeHightWrapper);
+//           // for(var i in this)
+//           //   console.log(i+' : '+this[i])
+//           var originHeight = $(this).css('height');//parseInt( window.getComputedStyle(this,null).getPropertyValue('height'));
+//           $(this).css('height',originHeight);
+//           //$(this).attr('style',  'height:'+originHeight+';');
+//           console.log( $(this).css('height'));
+//           function changeHightWrapper(){
+//               changeHight.call(this,originHeight);
+//           }
+//       } 
+//   }
+// );
+
+// function changeHight(originHeight){
+    
+//    //console.log($(this).css('height') +' : '+ originHeight);
+//    if( $(this).css('height') == originHeight){
+//          $(this).css('height',parseInt(originHeight) + 200 + 'px');
+//          $(this).find('.mediaPlayer').attr('style','displays:block;');
+//          return ;
+//    }else{
+//          $(this).css('height',originHeight);
+//          $(this).find('.mediaPlayer').attr('style','displays:none;');
+//          return ;
+//    }
+// }
+
 
 /*
 var reader;
@@ -146,10 +175,8 @@ function getMusicBox(trgetDiv){
     while (trgetDiv.firstChild) trgetDiv.removeChild(trgetDiv.firstChild);
     var cln = bgPage.$(bgMusicBox).clone(true,true);
     $(trgetDiv).append(cln);
-    $(cln).find('[data-type="File"]').each(function(){ 
-        // for(var i in this)
-        //   console.log(i+' : '+this[i]);
-        $(this).createMediaPlayer.call(this);
+    $(cln).find('div[data-type="File"]').each(function(){ 
+        setMediaPlayerShowAffect(this);
     });
 }
 
@@ -158,14 +185,15 @@ function getPlayBox(trgetDiv){
     while (trgetDiv.firstChild) trgetDiv.removeChild(trgetDiv.firstChild);
     var cln = bgPage.$(bgPlayBox).clone(true,true);
     $(trgetDiv).append(cln);
+    $(cln).find('div[data-type="File"]').each(function(){ 
+        setMediaPlayerShowAffect(this);
+    });
 }
 
 
 function handleConnect(e){
     let channelID       = $('#channelID').val();
     let channelPassword = $('#channelPassword').val();
-
-    
     connectManager.connect({ id:channelID ,pw:channelPassword },connectSuccessFunc,connectFailFunc);
 }
 

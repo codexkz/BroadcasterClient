@@ -61,22 +61,23 @@ function Drawer(){
             elem.setAttribute( 'data-degree' , directoryEntry.degree);
             elem.setAttribute( 'data-status' , 'close' );
             elem.appendChild( text );
-            $(elem).on('click',directoryEntry.isDirectory? directoryClickHanddler:fileClickHanddler).hide();
+        if(directoryEntry.isDirectory) $(elem).hide().on('click',directoryClickHanddler);
+        if(directoryEntry.isFile)      $(elem).hide().append(mediaManager.createMediaplayer());
         
-        let audioElem ;
-        if(directoryEntry.isFile){
-                elem.setAttribute( 'data-created' , 'true');
-                audioElem = document.createElement('audio');
-                audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
-                audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
-                audioElem.setAttribute( 'data-status' , 'close' );
-                audioElem.setAttribute( 'loop' , 'loop' );
-                audioElem.setAttribute( 'type' , directoryEntry.entity.type );
-                audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
-                document.getElementById('audioContainer').appendChild( audioElem );
-                //document.getElementById('audioControlerContainer').appendChild( elem );
-                $('#audioControlerContainer').append($(elem).clone(true));
-        }
+        // let audioElem ;
+        // if(directoryEntry.isFile){
+        //         elem.setAttribute( 'data-created' , 'true');
+        //         audioElem = document.createElement('audio');
+        //         audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
+        //         audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
+        //         audioElem.setAttribute( 'data-status' , 'close' );
+        //         audioElem.setAttribute( 'loop' , 'loop' );
+        //         audioElem.setAttribute( 'type' , directoryEntry.entity.type );
+        //         audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
+        //         document.getElementById('audioContainer').appendChild( audioElem );
+        //         //document.getElementById('audioControlerContainer').appendChild( elem );
+        //         $('#audioControlerContainer').append($(elem).clone(true));
+        // }
         
         function directoryClickHanddler(){
             let originDiv = $('[data-id='+this.getAttribute('data-id')+']');
@@ -101,54 +102,54 @@ function Drawer(){
             } 
         }//end-directoryClickHanddler()
 
-        function fileClickHanddler(){
-            let originDiv = $('[data-id='+this.getAttribute('data-id')+']');
-            switch($(originDiv).attr('data-status')) {
-                case 'close': 
-                        if(directoryEntry.entity.type.split('/')[0] == 'video'){
-                            let videoFile        = '?file='     + (window.URL.createObjectURL(directoryEntry.entity));
-                            let videoTitle       = '&title='    + directoryEntry.entity.name;
-                            let config   =  {  url:chrome.runtime.getURL('video.html') + videoFile + videoTitle , type:'popup' ,width:0 , height:0 }  ;
-                            let callback = function(window){    $(originDiv).attr('data-window',window.id); } ;
-                            chrome.runtime.onMessage.addListener(setVideoConfigAfterWindowAlready);
-                            chrome.windows.create(config , callback );
-                        }else{
-                            //Avoid the Promise Error
-                            setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
-                            //audioElem.play(); 
-                        }
-                        $(originDiv).attr( 'data-status' , 'open' );
-                        break;
-                case 'open':
-                        if(directoryEntry.entity.type.split('/')[0] == 'video'){ 
-                            chrome.windows.remove(parseInt($(originDiv).attr('data-window'))); 
-                            $(originDiv).attr( 'data-status' , 'close' );
-                        }else{
-                            audioElem.pause(); 
-                            $(originDiv).attr( 'data-status' , 'close' );
-                        }
-                        break;
-                default:
-            }
-        }//end-fileClickHanddler()
+        // function fileClickHanddler(){
+        //     let originDiv = $('[data-id='+this.getAttribute('data-id')+']');
+        //     switch($(originDiv).attr('data-status')) {
+        //         case 'close': 
+        //                 if(directoryEntry.entity.type.split('/')[0] == 'video'){
+        //                     let videoFile        = '?file='     + (window.URL.createObjectURL(directoryEntry.entity));
+        //                     let videoTitle       = '&title='    + directoryEntry.entity.name;
+        //                     let config   =  {  url:chrome.runtime.getURL('video.html') + videoFile + videoTitle , type:'popup' ,width:0 , height:0 }  ;
+        //                     let callback = function(window){    $(originDiv).attr('data-window',window.id); } ;
+        //                     chrome.runtime.onMessage.addListener(setVideoConfigAfterWindowAlready);
+        //                     chrome.windows.create(config , callback );
+        //                 }else{
+        //                     //Avoid the Promise Error
+        //                     setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
+        //                     //audioElem.play(); 
+        //                 }
+        //                 $(originDiv).attr( 'data-status' , 'open' );
+        //                 break;
+        //         case 'open':
+        //                 if(directoryEntry.entity.type.split('/')[0] == 'video'){ 
+        //                     chrome.windows.remove(parseInt($(originDiv).attr('data-window'))); 
+        //                     $(originDiv).attr( 'data-status' , 'close' );
+        //                 }else{
+        //                     audioElem.pause(); 
+        //                     $(originDiv).attr( 'data-status' , 'close' );
+        //                 }
+        //                 break;
+        //         default:
+        //     }
+        // }//end-fileClickHanddler()
 
-        function setVideoConfigAfterWindowAlready(request, sender, sendResponse) {
-            if(request.action == 'alreadySetWindow'){
-                //it's asynchronized ?
-                chrome.tabs.sendMessage(sender.tab.id, {action: "setVolume",data:100});
-                chrome.tabs.sendMessage(sender.tab.id, {action: "setCurrentTime",data:audioElem.currentTime});
-                chrome.tabs.sendMessage(sender.tab.id, {action: "play"});
-                audioElem.volume  = 0 ;
-                //Avoid the Promise Error
-                setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
-            }
-        }
+        // function setVideoConfigAfterWindowAlready(request, sender, sendResponse) {
+        //     if(request.action == 'alreadySetWindow'){
+        //         //it's asynchronized ?
+        //         chrome.tabs.sendMessage(sender.tab.id, {action: "setVolume",data:100});
+        //         chrome.tabs.sendMessage(sender.tab.id, {action: "setCurrentTime",data:audioElem.currentTime});
+        //         chrome.tabs.sendMessage(sender.tab.id, {action: "play"});
+        //         audioElem.volume  = 0 ;
+        //         //Avoid the Promise Error
+        //         setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
+        //     }
+        // }
         return elem;
     }//end-createDirectoryEntryDiv()
 
-    chrome.tabs.onRemoved.addListener(function (tabId,removeInfo){
-        $('[data-window='+removeInfo.windowId+']').attr( 'data-status' , 'close' );
-    });
+    // chrome.tabs.onRemoved.addListener(function (tabId,removeInfo){
+    //     $('[data-window='+removeInfo.windowId+']').attr( 'data-status' , 'close' );
+    // });
 }//end-Drawer()
 })();
 

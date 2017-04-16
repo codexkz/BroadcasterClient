@@ -16,7 +16,7 @@
   "browser_action": {
     "default_icon": "Icons/stop.png",
     "default_title": "Get start!",
-    "default_popup": "index.html"
+    "default_popup": "popup.html"
   },
   
   "content_scripts": [
@@ -28,7 +28,7 @@
     }
   ],
 
-  "web_accessible_resources":["video.html","chatroom.html","chat-window.css"],
+  "web_accessible_resources":["video-window.html","video-window.css","chat-window.html","chat-window.css"],
 
   "permissions": [
     "management",
