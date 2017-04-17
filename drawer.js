@@ -61,23 +61,21 @@ function Drawer(){
             elem.setAttribute( 'data-degree' , directoryEntry.degree);
             elem.setAttribute( 'data-status' , 'close' );
             elem.appendChild( text );
-        if(directoryEntry.isDirectory) $(elem).hide().on('click',directoryClickHanddler);
-        if(directoryEntry.isFile)      $(elem).hide().append(mediaManager.createMediaplayer());
-        
-        // let audioElem ;
-        // if(directoryEntry.isFile){
-        //         elem.setAttribute( 'data-created' , 'true');
-        //         audioElem = document.createElement('audio');
-        //         audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
-        //         audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
-        //         audioElem.setAttribute( 'data-status' , 'close' );
-        //         audioElem.setAttribute( 'loop' , 'loop' );
-        //         audioElem.setAttribute( 'type' , directoryEntry.entity.type );
-        //         audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
-        //         document.getElementById('audioContainer').appendChild( audioElem );
-        //         //document.getElementById('audioControlerContainer').appendChild( elem );
-        //         $('#audioControlerContainer').append($(elem).clone(true));
-        // }
+        if(directoryEntry.isDirectory) $(elem).hide().on('click',directoryClickHanddler); 
+        if(directoryEntry.isFile){
+                elem.setAttribute( 'data-created' , 'true');
+                $(elem).hide().append(mediaManager.createMediaplayer(elem));
+                let audioElem = document.createElement('audio');
+                audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
+                audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
+                audioElem.setAttribute( 'data-status' , 'close' );
+                audioElem.setAttribute( 'loop' , 'loop' );
+                audioElem.setAttribute( 'type' , directoryEntry.entity.type );
+                audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
+                document.getElementById('audioContainer').appendChild( audioElem );
+                //document.getElementById('audioControlerContainer').appendChild( elem );
+                $('#mediaPlayingContainer').append($(elem).clone(true));
+        }
         
         function directoryClickHanddler(){
             let originDiv = $('[data-id='+this.getAttribute('data-id')+']');

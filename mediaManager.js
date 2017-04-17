@@ -22,25 +22,6 @@
             }
         })();
 
-
-
-        // let audioElem ;
-        // if(directoryEntry.isFile){
-        //         elem.setAttribute( 'data-created' , 'true');
-        //         audioElem = document.createElement('audio');
-        //         audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
-        //         audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
-        //         audioElem.setAttribute( 'data-status' , 'close' );
-        //         audioElem.setAttribute( 'loop' , 'loop' );
-        //         audioElem.setAttribute( 'type' , directoryEntry.entity.type );
-        //         audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
-        //         document.getElementById('audioContainer').appendChild( audioElem );
-        //         //document.getElementById('audioControlerContainer').appendChild( elem );
-        //         $('#audioControlerContainer').append($(elem).clone(true));
-        // }
-        
-        
-
          //自聽模式
          //send
          //播放曲目:點選自聽按鈕
@@ -71,19 +52,61 @@
         }
 
         //for sender
-        this.play =function(){
+        // this.play =function(){
             
-        }
+        // }
 
-        this.pause  =function(){
+        // this.pause  =function(){
              
-        }
+        // }
 
-        this.stop  =function(){
+        // this.stop  =function(){
              
-        }
+        // }
         
-        this.createMediaplayer =function(){
+        this.createMediaplayer =function(elem){
+            let playbutton      = $(mediaPlayerElement).find('.play')[0] ;
+            let defaultBar      = $(mediaPlayerElement).find('.defaultBar')[0] ;
+            let progressBar     = $(mediaPlayerElement).find('.progressBar')[0] ;
+            let mediaElement    ;
+           
+            $(playbutton).on('click',function(e){
+                playButtonHanddler(e,mediaElement,playbutton);
+            });
+            $(defaultBar).on('click',function(e){
+                defaultBarClickedHanddler(e,playbutton,defaultBar,progressBar);
+            });
+
+            function playButtonHanddler(e,mediaElement,playbutton){
+                mediaElement  = $('#audioContainer').find('[data-id="'+$(elem).attr('data-id')+'"]')[0] ;
+                if(!mediaElement.paused && !mediaElement.ended){
+                    mediaElement.pause();
+                    playbutton.textContent='play';
+                    window.clearInterval(updateCounter);
+                }else{
+                    mediaElement.play();
+                    playbutton.textContent ='pause';
+                    updateCounter=window.setInterval(update,100);
+                }
+                function update(){
+                    if(!mediaElement.ended){
+                        var size=mediaElement.currentTime/mediaElement.duration*100;
+                        progressBar.style.width=size+'%';
+                    }else{
+                        progressBar.style.width='0%';
+                        playButton.textContent='play';
+                    }
+                }
+            }
+
+            function defaultBarClickedHanddler(e,playbutton,defaultBar,progressBar){
+                var mouseX = e.clientX-(defaultBar.offsetLeft);
+                var defaultBarWidth= parseInt(window.getComputedStyle(defaultBar,null).width);  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
+                var size = mouseX/defaultBarWidth*100;
+                progressBar.style.width = size + '%' ;
+                mediaElement.currentTime = mediaElement.duration * size / 100 ;
+            }
+
             return $(mediaPlayerElement).clone(true) ;
             
             //             function fileClickHanddler(){

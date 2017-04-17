@@ -4,3 +4,18 @@
         height: 200px;
         width: 100%;
 }
+
+
+.defaultBar{
+	border:1px solid steelblue;
+	width:510px;
+	height:21px;
+	float:left;
+	padding:2px;
+}
+
+.progressBar{
+	background-color:steelblue;
+	width:0px;
+	height:21px;
+}

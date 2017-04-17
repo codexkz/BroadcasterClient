@@ -9,7 +9,7 @@ var chatManager      = bgPage.chatManager ;
 
 var bgAudioes        = bgPage.document.getElementById('audioContainer');
 var bgMusicBox       = bgPage.document.getElementById('directoryEntryContainer');
-var bgPlayBox        = bgPage.document.getElementById('audioControlerContainer');
+var bgPlayBox        = bgPage.document.getElementById('mediaPlayingContainer');
 var popMusicBox      = document.getElementById('directoryEntryView');
 var popPlayBox       = document.getElementById('audioView');
 
