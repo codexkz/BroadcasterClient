@@ -14,10 +14,8 @@
             xhr.send();
             function onLoadHanddler(){
                 if (xhr.readyState === 4 && xhr.status == 200) {
-                    console.log('i have work');
                     let doc = new DOMParser().parseFromString(xhr.responseText, 'text/html');
                     mediaPlayerElement = doc.all[0].getElementsByClassName('mediaPlayer')[0];
-                    console.log(mediaPlayerElement);    
                 }
             }
         })();
@@ -65,49 +63,67 @@
         // }
         
         this.createMediaplayer =function(elem){
-            let playbutton      = $(mediaPlayerElement).find('.play')[0] ;
-            let defaultBar      = $(mediaPlayerElement).find('.defaultBar')[0] ;
-            let progressBar     = $(mediaPlayerElement).find('.progressBar')[0] ;
-            let mediaElement    ;
-           
-            $(playbutton).on('click',function(e){
-                playButtonHanddler(e,mediaElement,playbutton);
-            });
-            $(defaultBar).on('click',function(e){
-                defaultBarClickedHanddler(e,playbutton,defaultBar,progressBar);
-            });
 
-            function playButtonHanddler(e,mediaElement,playbutton){
-                mediaElement  = $('#audioContainer').find('[data-id="'+$(elem).attr('data-id')+'"]')[0] ;
-                if(!mediaElement.paused && !mediaElement.ended){
-                    mediaElement.pause();
-                    playbutton.textContent='play';
-                    window.clearInterval(updateCounter);
-                }else{
-                    mediaElement.play();
-                    playbutton.textContent ='pause';
-                    updateCounter=window.setInterval(update,100);
-                }
-                function update(){
-                    if(!mediaElement.ended){
-                        var size=mediaElement.currentTime/mediaElement.duration*100;
-                        progressBar.style.width=size+'%';
+
+
+
+            return (function bindEventHanddlerOnNewElement(mediaPlayerElem,parentElem){
+
+                mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play')[0] ;
+                mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar')[0] ;
+                mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar')[0] ;
+                mediaPlayerElem.mediaElement    ;
+                mediaPlayerElem.updateCounter   ;
+
+                $(mediaPlayerElem).find('.play').on('click',playButtonHanddler);
+                $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler); 
+
+
+                function playButtonHanddler(e){
+                    e.stopImmediatePropagation();
+                    
+
+                    mediaPlayerElem.mediaElement = $('#audioContainer').find('[data-id="'+$(parentElem).attr('data-id')+'"]')[0] ;
+
+                    if(!mediaPlayerElem.mediaElement.paused && !mediaPlayerElem.mediaElement.ended){
+                        mediaPlayerElem.mediaElement.pause();
+                        mediaPlayerElem.playbutton.textContent='play';
+                        window.clearInterval(mediaPlayerElem.updateCounter);
                     }else{
-                        progressBar.style.width='0%';
-                        playButton.textContent='play';
+                        mediaPlayerElem.mediaElement.play();
+                        // for(var i in mediaPlayerElem)
+                        //     console.log(i+' : '+mediaPlayerElem[i]);
+                        mediaPlayerElem.playbutton.textContent ='pause';
+                        mediaPlayerElem.updateCounter = window.setInterval(update,100);
+                    }
+
+                    function update(){
+                        if(!mediaPlayerElem.mediaElement.ended){
+                            var size = mediaPlayerElem.mediaElement.currentTime/mediaPlayerElem.mediaElement.duration*100;
+                            mediaPlayerElem.progressBar.style.width=size+'%';
+                        }else{
+                            mediaPlayerElem.progressBar.style.width='0%';
+                            mediaPlayerElem.playButton.textContent='play';
+                        }
                     }
                 }
-            }
 
-            function defaultBarClickedHanddler(e,playbutton,defaultBar,progressBar){
-                var mouseX = e.clientX-(defaultBar.offsetLeft);
-                var defaultBarWidth= parseInt(window.getComputedStyle(defaultBar,null).width);  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
-                var size = mouseX/defaultBarWidth*100;
-                progressBar.style.width = size + '%' ;
-                mediaElement.currentTime = mediaElement.duration * size / 100 ;
-            }
+                function defaultBarClickedHanddler(e){
 
-            return $(mediaPlayerElement).clone(true) ;
+                    e.stopImmediatePropagation();
+                    var mouseX = e.clientX-(mediaPlayerElem.defaultBar.offsetLeft);
+                    var defaultBarWidth= parseInt(window.getComputedStyle(mediaPlayerElem.defaultBar,null).width);  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
+                    var size = mouseX/defaultBarWidth*100;
+                    mediaPlayerElem.progressBar.style.width = size + '%' ;
+                    mediaPlayerElem.mediaElement.currentTime = mediaPlayerElem.mediaElement.duration * size / 100 ;
+                }
+
+                return  mediaPlayerElem ;
+
+            })($(mediaPlayerElement).clone(false),elem);
+
+
+            //return newMediaPlayerElement ;
             
             //             function fileClickHanddler(){
             // let originDiv = $('[data-id='+this.getAttribute('data-id')+']');
