@@ -75,7 +75,6 @@ function Drawer(){
                 document.getElementById('audioContainer').appendChild( audioElem );
                 //document.getElementById('audioControlerContainer').appendChild( elem );
                 $(elem).hide().append(mediaManager.createMediaplayer(elem));
-                //$('#mediaPlayingContainer').append($(elem).clone(true));
         }
         
         function directoryClickHanddler(){

@@ -34,9 +34,16 @@ $(bgPlayBox).each ( function () {
 } );
 
 function musicBoxMutationHandler (mutationRecords) {
-    // for(var i in mutationRecords)
-    //     console.log(i+':'+mutationRecords[i].target.id);
-    for(var i in mutationRecords) getMusicBox(mutationRecords[i].target.id);
+    for(var i in mutationRecords){
+        console.log(i+':'+mutationRecords[i].target.id);
+        for( var j in mutationRecords[i] )
+          console.log(j +' : '+ mutationRecords[i][j]);
+    }
+        
+    for(var i in mutationRecords){
+      if(mutationRecords[i].type == 'attributes') updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
+      if(mutationRecords[i].type == 'childList')  updateMusicBoxChildList(mutationRecords[i].target.id );
+    } 
 }
 
 function playBoxMutationHandler(mutationRecords){
@@ -49,6 +56,11 @@ function hiddenNotOpenAudioTag(trgetDiv){
     $(popPlayBox).find('.directoryEntry[data-status="close"]').hide();
 }
 
+
+/*
+*  popup.html init 
+*/
+
 (function init(){
     //lightBar.createScrollbarInTarget("directoryEntryContainer");
 
@@ -57,7 +69,7 @@ function hiddenNotOpenAudioTag(trgetDiv){
         document.addEventListener("DOMContentLoaded", function (){
             // Get the previous status
             let imageObj = {path : {"128": "Icons/active.png"}}
-            if(bgMusicBox.firstChild)  getMusicBox(popMusicBox.id); 
+            if(bgMusicBox.firstChild)  updateMusicBoxChildList(popMusicBox.id); 
             if(bgPlayBox.firstChild)   getPlayBox(popPlayBox.id);
             //hiddenNotOpenAudioTag(popPlayBox); 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
@@ -95,8 +107,7 @@ function changeMode(e){
 
 
 function setMediaPlayerShowAffect(elem){
-         console.log(elem);
-          elem.textContent = 'adslfaksdpofaksdf';
+          //elem.textContent = 'adslfaksdpofaksdf';
           elem.addEventListener('mouseenter',changeHightWrapper);
           elem.addEventListener('mouseleave',changeHightWrapper);
           var originHeight = $(elem).css('height');
@@ -125,20 +136,17 @@ function changeHight(e,originHeight){
 }
 
 
-function getMusicBox(trgetDiv){
-    //console.log(bgPage.$('#'+trgetDiv));
+function updateMusicBoxChildList(trgetDiv){
     let cln = bgPage.$('#'+trgetDiv).clone(true,true);
     $('#'+trgetDiv).replaceWith(cln) ;
-    $(cln).find('div[data-type="File"]').each(function(){
-        setMediaPlayerShowAffect(this);
-    });
-        
-    // if( medias.length > 0 )for(var i=0 ; i < medias.length ; i++){
-            
-    // } 
-    
+    $('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
 }
 
+function updateMusicBoxAttribute(trgetDiv,attributeName){
+    let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
+    $('#'+trgetDiv).attr(attributeName , attr) ;
+    $('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+}
 
 function getPlayBox(trgetDiv){
     // let cln = bgPage.$('#mediaPlayingContainer > #'+trgetDiv).clone(true,true);
@@ -147,6 +155,9 @@ function getPlayBox(trgetDiv){
     // if( medias.length > 0 )for(let i in medias) if( i != 'length') setMediaPlayerShowAffect(medias[i]);
 }
 
+/*
+*  connect signal handdle 
+*/
 
 function handleConnect(e){
     let channelID       = $('#channelID').val();
@@ -170,6 +181,11 @@ function connectFailFunc(){
         $('#connectLabel').text('Fail');
 }
 
+
+/*
+*  pickedFiles 
+*/
+
 function handlePickedFiles(e){
     var directorySystem  ;
     directorySystem = directoryManager.createDirectorySystem(e.target.files);
@@ -180,7 +196,7 @@ function handlePickedFiles(e){
     while (bgAudioes.firstChild)  bgAudioes.removeChild(bgAudioes.firstChild);
 
     bgPage.drawer.draw(directorySystem.getRootDirectoryEntry(),bgMusicBox);
-    getMusicBox(popMusicBox.id);
+    updateMusicBoxChildList(popMusicBox.id);
     getPlayBox(popPlayBox.id);
 
     /*

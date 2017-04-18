@@ -9,7 +9,7 @@
 
         (function init(){
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', htmlFileURL ,  false );
+            xhr.open('POST', htmlFileURL ,false);
             xhr.onload  = onLoadHanddler ;
             xhr.send();
             function onLoadHanddler(){
@@ -64,11 +64,12 @@
         
         this.createMediaplayer =function(elem){
             return (function bindEventHanddlerOnNewElement(mediaPlayerElem,parentElem){
-
-                mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play').attr('id','play'+$(parentElem).attr('data-id')) ;
-                mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar').attr('id','defaultBar'+$(parentElem).attr('data-id')) ;
-                mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar').attr('id','progressBar'+$(parentElem).attr('data-id'));
-                mediaPlayerElem.mediaElement    = $('#audioContainer').find('[data-id="'+$(parentElem).attr('data-id')+'"]')[0] ;
+                mediaPlayerElem.dataID          = $(parentElem).attr('data-id');
+                mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play').attr('id','play'+  mediaPlayerElem.dataID ) ;
+                mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar').attr('id','defaultBar'+ mediaPlayerElem.dataID ) ;
+                mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar').attr('id','progressBar'+ mediaPlayerElem.dataID );
+                mediaPlayerElem.mediaElement    = $('#audioContainer').find('[data-id="'+ mediaPlayerElem.dataID +'"]')[0] ;
+                $(mediaPlayerElem).attr('id','play'+  mediaPlayerElem.dataID ) ;
 
                 $(mediaPlayerElem).find('.play').on('click',playButtonHanddler);
                 $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler);
@@ -79,11 +80,13 @@
                         mediaPlayerElem.mediaElement.pause();
                         //$(parentElem).attr( 'data-status' , 'close' );
                         mediaPlayerElem.playbutton[0].textContent='play';
+                        //mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                         window.clearInterval(mediaPlayerElem.updateCounter);
                     }else{
                         mediaPlayerElem.mediaElement.play();
                         //$(parentElem).attr( 'data-status' , 'open' );
-                        parentElem.playbutton[0].textContent ='pause';
+                        mediaPlayerElem.playbutton[0].textContent ='pause';
+                        //mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
                         mediaPlayerElem.updateCounter = window.setInterval(update,250);
                     }
 
@@ -95,6 +98,7 @@
                             mediaPlayerElem.progressBar[0].style.width='0%';
                             //$(parentElem).attr( 'data-status' , 'close' );
                             mediaPlayerElem.playButton[0].textContent='play';
+                            //mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                         }
                     }
                 }
@@ -145,7 +149,15 @@
             //     default:
             // }
         }//end-fileClickHanddler()
+        this.insertToMediaPlayingContainer = function(dataID){
+            let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
+            if(targetDivList.length == 0 ) $('#mediaPlayingContainer').append($(document.createElement( 'div' )).attr('playing-data-id',dataID));
+        }
 
+        this.removeFromMediaPlayingContainer = function(dataID){
+            let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
+            if(targetDivList.length > 0 )  $(targetDiv).remove();
+        }
         // function setVideoConfigAfterWindowAlready(request, sender, sendResponse) {
         //     if(request.action == 'alreadySetWindow'){
         //         //it's asynchronized ?
