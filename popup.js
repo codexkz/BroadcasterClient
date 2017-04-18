@@ -10,8 +10,8 @@ var chatManager      = bgPage.chatManager ;
 var bgAudioes        = bgPage.document.getElementById('audioContainer');
 var bgMusicBox       = bgPage.document.getElementById('directoryEntryContainer');
 var bgPlayBox        = bgPage.document.getElementById('mediaPlayingContainer');
-var popMusicBox      = document.getElementById('directoryEntryView');
-var popPlayBox       = document.getElementById('audioView');
+var popMusicBox      = document.getElementById('directoryEntryContainer');
+var popPlayBox       = document.getElementById('mediaPlayingContainer');
 
 
 var connectManager = bgPage.connectManager ;
@@ -34,23 +34,19 @@ $(bgPlayBox).each ( function () {
 } );
 
 function musicBoxMutationHandler (mutationRecords) {
-    //console.info ("mutationHandler:");
-    getMusicBox(popMusicBox);
-    // mutationRecords.forEach ( function (mutation) {
-    //      console.log(mutation.target.innerHTML);
-    //      for(var i in mutation)
-    //      console.log(i+':'+mutation[i]);
-    // } );
+    // for(var i in mutationRecords)
+    //     console.log(i+':'+mutationRecords[i].target.id);
+    for(var i in mutationRecords) getMusicBox(mutationRecords[i].target.id);
 }
 
-function playBoxMutationHandler(){
-    getPlayBox(popPlayBox);
+function playBoxMutationHandler(mutationRecords){
+    for(var i in mutationRecords) getPlayBox(mutationRecords[i].target.id);
     hiddenNotOpenAudioTag(popPlayBox);
 }
 
 function hiddenNotOpenAudioTag(trgetDiv){
-   $(popPlayBox).find('.directoryEntry[data-status="open"]').show();
-   $(popPlayBox).find('.directoryEntry[data-status="close"]').hide();
+    $(popPlayBox).find('.directoryEntry[data-status="open"]').show();
+    $(popPlayBox).find('.directoryEntry[data-status="close"]').hide();
 }
 
 (function init(){
@@ -61,10 +57,9 @@ function hiddenNotOpenAudioTag(trgetDiv){
         document.addEventListener("DOMContentLoaded", function (){
             // Get the previous status
             let imageObj = {path : {"128": "Icons/active.png"}}
-            chrome.browserAction.setIcon(imageObj);
-            if(bgMusicBox.firstChild)  getMusicBox(popMusicBox); 
-            if(bgPlayBox.firstChild)  getPlayBox(popPlayBox);
-            hiddenNotOpenAudioTag(popPlayBox); 
+            if(bgMusicBox.firstChild)  getMusicBox(popMusicBox.id); 
+            if(bgPlayBox.firstChild)   getPlayBox(popPlayBox.id);
+            //hiddenNotOpenAudioTag(popPlayBox); 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
             if(controlerSocket && controlerSocket.readyState ==3)  connectFailFunc();
             $('#channelID').val( (connectManager.getChannelID()=='default') ? '' : connectManager.getChannelID() );
@@ -100,6 +95,8 @@ function changeMode(e){
 
 
 function setMediaPlayerShowAffect(elem){
+         console.log(elem);
+          elem.textContent = 'adslfaksdpofaksdf';
           elem.addEventListener('mouseenter',changeHightWrapper);
           elem.addEventListener('mouseleave',changeHightWrapper);
           var originHeight = $(elem).css('height');
@@ -116,7 +113,8 @@ function changeHight(e,originHeight){
             $(this).find('.mediaPlayer').css('display','block');
          });
          return ;
-   }else{
+   }
+   if((e.type !='mouseenter')){
          $(this).css('height',originHeight);
          $(this).find('.mediaPlayer').css('display','none');
          $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
@@ -127,67 +125,26 @@ function changeHight(e,originHeight){
 }
 
 
-// jQuery.fn.extend(
-//   {
-//       createMediaPlayer:function(){
-//           var mediaPlayer = document.createElement('div');
-//               mediaPlayer.setAttribute('class','mediaPlayer');
-//               mediaPlayer.setAttribute('height','200px');
-//               mediaPlayer.setAttribute('style','displays:none;');
-//           $(this).append(mediaPlayer);
-//           $(this).on('mouseenter',changeHightWrapper);
-//           $(this).on('mouseleave',changeHightWrapper);
-//           // for(var i in this)
-//           //   console.log(i+' : '+this[i])
-//           var originHeight = $(this).css('height');//parseInt( window.getComputedStyle(this,null).getPropertyValue('height'));
-//           $(this).css('height',originHeight);
-//           //$(this).attr('style',  'height:'+originHeight+';');
-//           console.log( $(this).css('height'));
-//           function changeHightWrapper(){
-//               changeHight.call(this,originHeight);
-//           }
-//       } 
-//   }
-// );
-
-// function changeHight(originHeight){
-    
-//    //console.log($(this).css('height') +' : '+ originHeight);
-//    if( $(this).css('height') == originHeight){
-//          $(this).css('height',parseInt(originHeight) + 200 + 'px');
-//          $(this).find('.mediaPlayer').attr('style','displays:block;');
-//          return ;
-//    }else{
-//          $(this).css('height',originHeight);
-//          $(this).find('.mediaPlayer').attr('style','displays:none;');
-//          return ;
-//    }
-// }
-
-
-/*
-var reader;
-var progress = document.querySelector('.percent');
-*/
-
-
 function getMusicBox(trgetDiv){
-    while (trgetDiv.firstChild) trgetDiv.removeChild(trgetDiv.firstChild);
-    var cln = bgPage.$(bgMusicBox).clone(true,true);
-    $(trgetDiv).append(cln);
-    $(cln).find('div[data-type="File"]').each(function(){ 
+    //console.log(bgPage.$('#'+trgetDiv));
+    let cln = bgPage.$('#'+trgetDiv).clone(true,true);
+    $('#'+trgetDiv).replaceWith(cln) ;
+    $(cln).find('div[data-type="File"]').each(function(){
         setMediaPlayerShowAffect(this);
     });
+        
+    // if( medias.length > 0 )for(var i=0 ; i < medias.length ; i++){
+            
+    // } 
+    
 }
 
 
 function getPlayBox(trgetDiv){
-    while (trgetDiv.firstChild) trgetDiv.removeChild(trgetDiv.firstChild);
-    var cln = bgPage.$(bgPlayBox).clone(true,true);
-    $(trgetDiv).append(cln);
-    $(cln).find('div[data-type="File"]').each(function(){ 
-        setMediaPlayerShowAffect(this);
-    });
+    // let cln = bgPage.$('#mediaPlayingContainer > #'+trgetDiv).clone(true,true);
+    // let medias = $(cln).find('div[data-type="File"]');
+    // $('#mediaPlayingContainer > #'+trgetDiv).replaceWith(cln) ;
+    // if( medias.length > 0 )for(let i in medias) if( i != 'length') setMediaPlayerShowAffect(medias[i]);
 }
 
 
@@ -223,8 +180,8 @@ function handlePickedFiles(e){
     while (bgAudioes.firstChild)  bgAudioes.removeChild(bgAudioes.firstChild);
 
     bgPage.drawer.draw(directorySystem.getRootDirectoryEntry(),bgMusicBox);
-    getMusicBox(popMusicBox);
-    getPlayBox(popPlayBox);
+    getMusicBox(popMusicBox.id);
+    getPlayBox(popPlayBox.id);
 
     /*
     filePicker.getMusicFileList().each(function(node){

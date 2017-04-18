@@ -53,6 +53,7 @@ function Drawer(){
     function createDirectoryEntryDiv(directoryEntry){
         let text = document.createTextNode( directoryEntry.entity.name );
         let elem = document.createElement( 'div' );
+            elem.setAttribute( 'id' , 'directoryEntry'+directoryEntry.uuid );
             elem.setAttribute( 'class' , 'directoryEntry' );
             elem.setAttribute( 'data-id' , directoryEntry.uuid );
             elem.setAttribute( 'data-type' , directoryEntry.isDirectory? 'Directory': 'File');
@@ -64,7 +65,6 @@ function Drawer(){
         if(directoryEntry.isDirectory) $(elem).hide().on('click',directoryClickHanddler); 
         if(directoryEntry.isFile){
                 elem.setAttribute( 'data-created' , 'true');
-                $(elem).hide().append(mediaManager.createMediaplayer(elem));
                 let audioElem = document.createElement('audio');
                 audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
                 audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
@@ -74,7 +74,8 @@ function Drawer(){
                 audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
                 document.getElementById('audioContainer').appendChild( audioElem );
                 //document.getElementById('audioControlerContainer').appendChild( elem );
-                $('#mediaPlayingContainer').append($(elem).clone(true));
+                $(elem).hide().append(mediaManager.createMediaplayer(elem));
+                //$('#mediaPlayingContainer').append($(elem).clone(true));
         }
         
         function directoryClickHanddler(){

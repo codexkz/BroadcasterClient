@@ -63,58 +63,48 @@
         // }
         
         this.createMediaplayer =function(elem){
-
-
-
-
             return (function bindEventHanddlerOnNewElement(mediaPlayerElem,parentElem){
 
-                mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play')[0] ;
-                mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar')[0] ;
-                mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar')[0] ;
-                mediaPlayerElem.mediaElement    ;
-                mediaPlayerElem.updateCounter   ;
+                mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play').attr('id','play'+$(parentElem).attr('data-id')) ;
+                mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar').attr('id','defaultBar'+$(parentElem).attr('data-id')) ;
+                mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar').attr('id','progressBar'+$(parentElem).attr('data-id'));
+                mediaPlayerElem.mediaElement    = $('#audioContainer').find('[data-id="'+$(parentElem).attr('data-id')+'"]')[0] ;
 
                 $(mediaPlayerElem).find('.play').on('click',playButtonHanddler);
-                $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler); 
-
+                $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler);
 
                 function playButtonHanddler(e){
-                    e.stopImmediatePropagation();
-                    
-
-                    mediaPlayerElem.mediaElement = $('#audioContainer').find('[data-id="'+$(parentElem).attr('data-id')+'"]')[0] ;
-
+                    e.stopPropagation();
                     if(!mediaPlayerElem.mediaElement.paused && !mediaPlayerElem.mediaElement.ended){
                         mediaPlayerElem.mediaElement.pause();
-                        mediaPlayerElem.playbutton.textContent='play';
+                        //$(parentElem).attr( 'data-status' , 'close' );
+                        mediaPlayerElem.playbutton[0].textContent='play';
                         window.clearInterval(mediaPlayerElem.updateCounter);
                     }else{
                         mediaPlayerElem.mediaElement.play();
-                        // for(var i in mediaPlayerElem)
-                        //     console.log(i+' : '+mediaPlayerElem[i]);
-                        mediaPlayerElem.playbutton.textContent ='pause';
-                        mediaPlayerElem.updateCounter = window.setInterval(update,100);
+                        //$(parentElem).attr( 'data-status' , 'open' );
+                        parentElem.playbutton[0].textContent ='pause';
+                        mediaPlayerElem.updateCounter = window.setInterval(update,250);
                     }
 
                     function update(){
                         if(!mediaPlayerElem.mediaElement.ended){
                             var size = mediaPlayerElem.mediaElement.currentTime/mediaPlayerElem.mediaElement.duration*100;
-                            mediaPlayerElem.progressBar.style.width=size+'%';
+                            mediaPlayerElem.progressBar[0].style.width=size+'%';
                         }else{
-                            mediaPlayerElem.progressBar.style.width='0%';
-                            mediaPlayerElem.playButton.textContent='play';
+                            mediaPlayerElem.progressBar[0].style.width='0%';
+                            //$(parentElem).attr( 'data-status' , 'close' );
+                            mediaPlayerElem.playButton[0].textContent='play';
                         }
                     }
                 }
 
                 function defaultBarClickedHanddler(e){
-
-                    e.stopImmediatePropagation();
-                    var mouseX = e.clientX-(mediaPlayerElem.defaultBar.offsetLeft);
-                    var defaultBarWidth= parseInt(window.getComputedStyle(mediaPlayerElem.defaultBar,null).width);  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
+                    e.stopPropagation();
+                    var mouseX = e.clientX-(mediaPlayerElem.defaultBar[0].offsetLeft);
+                    var defaultBarWidth= 244 ; //parseInt(window.getComputedStyle(mediaPlayerElem.defaultBar,null).getPropertyValue('width'));  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
                     var size = mouseX/defaultBarWidth*100;
-                    mediaPlayerElem.progressBar.style.width = size + '%' ;
+                    mediaPlayerElem.progressBar[0].style.width = size + '%' ;
                     mediaPlayerElem.mediaElement.currentTime = mediaPlayerElem.mediaElement.duration * size / 100 ;
                 }
 
