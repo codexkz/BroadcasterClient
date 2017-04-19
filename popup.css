@@ -155,7 +155,7 @@
     color: dimgrey;
 }
 
-.directoryEntry[data-type=File]:active{
+/*.directoryEntry[data-type=File]:active{
     background-color: honeydew;
     border-color: honeydew;
     border-top: white;
@@ -167,7 +167,7 @@
     text-align: center;
     font-family: Calibri;
     color: dimgrey;
-}
+}*/
 
 /*cofig bar*/
 input{

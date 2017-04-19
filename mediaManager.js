@@ -69,24 +69,24 @@
                 mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar').attr('id','defaultBar'+ mediaPlayerElem.dataID ) ;
                 mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar').attr('id','progressBar'+ mediaPlayerElem.dataID );
                 mediaPlayerElem.mediaElement    = $('#audioContainer').find('[data-id="'+ mediaPlayerElem.dataID +'"]')[0] ;
-                $(mediaPlayerElem).attr('id','play'+  mediaPlayerElem.dataID ) ;
+                $(mediaPlayerElem).attr('id','mediaPlayer'+  mediaPlayerElem.dataID ) ;
 
                 $(mediaPlayerElem).find('.play').on('click',playButtonHanddler);
                 $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler);
 
                 function playButtonHanddler(e){
-                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                     if(!mediaPlayerElem.mediaElement.paused && !mediaPlayerElem.mediaElement.ended){
                         mediaPlayerElem.mediaElement.pause();
                         //$(parentElem).attr( 'data-status' , 'close' );
                         mediaPlayerElem.playbutton[0].textContent='play';
-                        //mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
+                        mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                         window.clearInterval(mediaPlayerElem.updateCounter);
                     }else{
                         mediaPlayerElem.mediaElement.play();
                         //$(parentElem).attr( 'data-status' , 'open' );
                         mediaPlayerElem.playbutton[0].textContent ='pause';
-                        //mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
+                        mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
                         mediaPlayerElem.updateCounter = window.setInterval(update,250);
                     }
 
@@ -98,13 +98,13 @@
                             mediaPlayerElem.progressBar[0].style.width='0%';
                             //$(parentElem).attr( 'data-status' , 'close' );
                             mediaPlayerElem.playButton[0].textContent='play';
-                            //mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
+                            mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                         }
                     }
                 }
 
                 function defaultBarClickedHanddler(e){
-                    e.stopPropagation();
+                    e.stopImmediatePropagation();
                     var mouseX = e.clientX-(mediaPlayerElem.defaultBar[0].offsetLeft);
                     var defaultBarWidth= 244 ; //parseInt(window.getComputedStyle(mediaPlayerElem.defaultBar,null).getPropertyValue('width'));  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
                     var size = mouseX/defaultBarWidth*100;
@@ -153,11 +153,11 @@
             let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
             if(targetDivList.length == 0 ) $('#mediaPlayingContainer').append($(document.createElement( 'div' )).attr('playing-data-id',dataID));
         }
-
         this.removeFromMediaPlayingContainer = function(dataID){
             let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
-            if(targetDivList.length > 0 )  $(targetDiv).remove();
+            if(targetDivList.length > 0 )  $(targetDivList).remove();
         }
+        
         // function setVideoConfigAfterWindowAlready(request, sender, sendResponse) {
         //     if(request.action == 'alreadySetWindow'){
         //         //it's asynchronized ?
@@ -169,7 +169,6 @@
         //         setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
         //     }
         // }
-        // return elem;
 
         //close vedio window 
         chrome.tabs.onRemoved.addListener(function (tabId,removeInfo){

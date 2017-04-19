@@ -35,9 +35,9 @@ $(bgPlayBox).each ( function () {
 
 function musicBoxMutationHandler (mutationRecords) {
     for(var i in mutationRecords){
-        console.log(i+':'+mutationRecords[i].target.id);
-        for( var j in mutationRecords[i] )
-          console.log(j +' : '+ mutationRecords[i][j]);
+        console.log(i+':'+mutationRecords[i].target.id+'-'+mutationRecords[i].type);
+        // for( var j in mutationRecords[i] )
+        //   console.log(j +' : '+ mutationRecords[i][j]);
     }
         
     for(var i in mutationRecords){
@@ -47,7 +47,18 @@ function musicBoxMutationHandler (mutationRecords) {
 }
 
 function playBoxMutationHandler(mutationRecords){
-    for(var i in mutationRecords) getPlayBox(mutationRecords[i].target.id);
+    for(var i in mutationRecords){
+      //if(mutationRecords[i].type == 'attributes') updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
+      if(mutationRecords[i].type == 'childList'){
+          for( var j in mutationRecords[i].addedNodes){
+             updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
+
+          }
+          for( var k in mutationRecords[i].removedNodes){
+             updatePlayBoxChildList(mutationRecords[i].addedNodes[k].getAttribute('playing-data-id'),'remove');
+          }
+      }  
+    } 
     hiddenNotOpenAudioTag(popPlayBox);
 }
 
@@ -70,7 +81,7 @@ function hiddenNotOpenAudioTag(trgetDiv){
             // Get the previous status
             let imageObj = {path : {"128": "Icons/active.png"}}
             if(bgMusicBox.firstChild)  updateMusicBoxChildList(popMusicBox.id); 
-            if(bgPlayBox.firstChild)   getPlayBox(popPlayBox.id);
+            //if(bgPlayBox.firstChild)   updatePlayBoxChildList(popPlayBox.id);
             //hiddenNotOpenAudioTag(popPlayBox); 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
             if(controlerSocket && controlerSocket.readyState ==3)  connectFailFunc();
@@ -145,14 +156,18 @@ function updateMusicBoxChildList(trgetDiv){
 function updateMusicBoxAttribute(trgetDiv,attributeName){
     let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
     $('#'+trgetDiv).attr(attributeName , attr) ;
-    $('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+    //if((attributeName=='style') && !($('#'+trgetDiv).attr('style')) )　$('#'+trgetDiv).css('height',($('#'+trgetDiv).css('height')));
 }
 
-function getPlayBox(trgetDiv){
-    // let cln = bgPage.$('#mediaPlayingContainer > #'+trgetDiv).clone(true,true);
-    // let medias = $(cln).find('div[data-type="File"]');
-    // $('#mediaPlayingContainer > #'+trgetDiv).replaceWith(cln) ;
-    // if( medias.length > 0 )for(let i in medias) if( i != 'length') setMediaPlayerShowAffect(medias[i]);
+function updatePlayBoxChildList(trgetDataId,status){
+    if(status == 'add'){
+        let cln = $(popMusicBox).find('div[data-id="'+trgetDataId+'"]').clone(true,true);
+        $(popPlayBox).append(cln);
+    }
+
+    if(status == 'remove'){
+        $(popPlayBox).find('div[data-id="'+trgetDataId+'"]').remove();
+    }
 }
 
 /*
@@ -197,7 +212,7 @@ function handlePickedFiles(e){
 
     bgPage.drawer.draw(directorySystem.getRootDirectoryEntry(),bgMusicBox);
     updateMusicBoxChildList(popMusicBox.id);
-    getPlayBox(popPlayBox.id);
+    //updatePlayBoxChildList(popPlayBox.id);
 
     /*
     filePicker.getMusicFileList().each(function(node){
