@@ -35,7 +35,7 @@ $(bgPlayBox).each ( function () {
 
 function musicBoxMutationHandler (mutationRecords) {
     for(var i in mutationRecords){
-        console.log(i+':'+mutationRecords[i].target.id+'-'+mutationRecords[i].type);
+        //console.log(i+':'+mutationRecords[i].target.id+'-'+mutationRecords[i].type);
         // for( var j in mutationRecords[i] )
         //   console.log(j +' : '+ mutationRecords[i][j]);
     }
@@ -50,12 +50,12 @@ function playBoxMutationHandler(mutationRecords){
     for(var i in mutationRecords){
       //if(mutationRecords[i].type == 'attributes') updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
       if(mutationRecords[i].type == 'childList'){
-          for( var j in mutationRecords[i].addedNodes){
-             updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
+          for( var j =0 ; j < mutationRecords[i].addedNodes.length ; j++ ){
+              updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
 
           }
-          for( var k in mutationRecords[i].removedNodes){
-             updatePlayBoxChildList(mutationRecords[i].addedNodes[k].getAttribute('playing-data-id'),'remove');
+          for( var k =0 ; k < mutationRecords[i].removedNodes.length ; k++ ){
+              updatePlayBoxChildList(mutationRecords[i].removedNodes[k].getAttribute('playing-data-id'),'remove');
           }
       }  
     } 
@@ -121,6 +121,7 @@ function setMediaPlayerShowAffect(elem){
           //elem.textContent = 'adslfaksdpofaksdf';
           elem.addEventListener('mouseenter',changeHightWrapper);
           elem.addEventListener('mouseleave',changeHightWrapper);
+          elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
           var originHeight = $(elem).css('height');
           $(elem).css('height',originHeight);
           function changeHightWrapper(e){
@@ -156,18 +157,22 @@ function updateMusicBoxChildList(trgetDiv){
 function updateMusicBoxAttribute(trgetDiv,attributeName){
     let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
     $('#'+trgetDiv).attr(attributeName , attr) ;
-    //if((attributeName=='style') && !($('#'+trgetDiv).attr('style')) )　$('#'+trgetDiv).css('height',($('#'+trgetDiv).css('height')));
+    if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);  ;
 }
 
 function updatePlayBoxChildList(trgetDataId,status){
-    if(status == 'add'){
-        let cln = $(popMusicBox).find('div[data-id="'+trgetDataId+'"]').clone(true,true);
-        $(popPlayBox).append(cln);
-    }
+    // if(status == 'add'){
+    //     let cln = bgPage.$('#directoryEntryContainer').clone(true,true);
+    //     $(cln).find('[data-id="'+trgetDataId+'"]').attr('id','playbox'+trgetDataId);
+    //     $('#mediaPlayingContainer').append($(cln).find('[data-id="'+trgetDataId+'"]'));
+    //     $('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+    //     //if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);  ;
+    //     //$('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+    // }
 
-    if(status == 'remove'){
-        $(popPlayBox).find('div[data-id="'+trgetDataId+'"]').remove();
-    }
+    // if(status == 'remove'){
+    //     $('#mediaPlayingContainer').find('[data-id="'+trgetDataId+'"]').remove();
+    // }
 }
 
 /*

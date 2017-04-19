@@ -154,7 +154,7 @@
             if(targetDivList.length == 0 ) $('#mediaPlayingContainer').append($(document.createElement( 'div' )).attr('playing-data-id',dataID));
         }
         this.removeFromMediaPlayingContainer = function(dataID){
-            let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
+            let targetDivList = $('#mediaPlayingContainer').find('[playing-data-id="'+dataID+'"]');
             if(targetDivList.length > 0 )  $(targetDivList).remove();
         }
         
