@@ -202,7 +202,7 @@ input{
    overflow-y: scroll;
 }
 
-#audioWindow:active{
+/*#audioWindow:active{
    position: fixed;
    min-width:inherit;
    width: 100%;
@@ -217,7 +217,7 @@ input{
    border-style: solid;
    border-radius: 5px;
    overflow-y: scroll;
-}      
+}      */
 
 #audioWindow-hide{
    position: fixed;

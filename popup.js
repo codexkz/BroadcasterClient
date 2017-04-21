@@ -35,24 +35,23 @@ $(bgPlayBox).each ( function () {
 
 function musicBoxMutationHandler (mutationRecords) {
     for(var i in mutationRecords){
-        //console.log(i+':'+mutationRecords[i].target.id+'-'+mutationRecords[i].type);
+        console.log(i+':'+mutationRecords[i].target.id+'-'+mutationRecords[i].type+'-'+ mutationRecords[i].attributeName);
         // for( var j in mutationRecords[i] )
         //   console.log(j +' : '+ mutationRecords[i][j]);
     }
         
     for(var i in mutationRecords){
       if(mutationRecords[i].type == 'attributes') updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
+      if(mutationRecords[i].type == 'attributes') updatePlayBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
       if(mutationRecords[i].type == 'childList')  updateMusicBoxChildList(mutationRecords[i].target.id );
     } 
 }
 
 function playBoxMutationHandler(mutationRecords){
     for(var i in mutationRecords){
-      //if(mutationRecords[i].type == 'attributes') updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
       if(mutationRecords[i].type == 'childList'){
           for( var j =0 ; j < mutationRecords[i].addedNodes.length ; j++ ){
               updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
-
           }
           for( var k =0 ; k < mutationRecords[i].removedNodes.length ; k++ ){
               updatePlayBoxChildList(mutationRecords[i].removedNodes[k].getAttribute('playing-data-id'),'remove');
@@ -81,7 +80,7 @@ function hiddenNotOpenAudioTag(trgetDiv){
             // Get the previous status
             let imageObj = {path : {"128": "Icons/active.png"}}
             if(bgMusicBox.firstChild)  updateMusicBoxChildList(popMusicBox.id); 
-            //if(bgPlayBox.firstChild)   updatePlayBoxChildList(popPlayBox.id);
+            if(bgPlayBox.firstChild)   $(bgPlayBox).children().each(function(){updatePlayBoxChildList($(this).attr('playing-data-id'),'add');});
             //hiddenNotOpenAudioTag(popPlayBox); 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
             if(controlerSocket && controlerSocket.readyState ==3)  connectFailFunc();
@@ -118,7 +117,6 @@ function changeMode(e){
 
 
 function setMediaPlayerShowAffect(elem){
-          //elem.textContent = 'adslfaksdpofaksdf';
           elem.addEventListener('mouseenter',changeHightWrapper);
           elem.addEventListener('mouseleave',changeHightWrapper);
           elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
@@ -132,6 +130,7 @@ function setMediaPlayerShowAffect(elem){
 function changeHight(e,originHeight){
    if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
          $(this).css('height',(parseInt(originHeight) + 200) + 'px');
+         $(this).css('display','block');
          $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
             $(this).find('.mediaPlayer').css('display','block');
          });
@@ -139,6 +138,7 @@ function changeHight(e,originHeight){
    }
    if((e.type !='mouseenter')){
          $(this).css('height',originHeight);
+         $(this).css('display','block');
          $(this).find('.mediaPlayer').css('display','none');
          $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
             $(this).find('.mediaPlayer').css('display','none');
@@ -157,24 +157,31 @@ function updateMusicBoxChildList(trgetDiv){
 function updateMusicBoxAttribute(trgetDiv,attributeName){
     let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
     $('#'+trgetDiv).attr(attributeName , attr) ;
-    if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);  ;
+    //if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);  ;
 }
 
 function updatePlayBoxChildList(trgetDataId,status){
-    // if(status == 'add'){
-    //     let cln = bgPage.$('#directoryEntryContainer').clone(true,true);
-    //     $(cln).find('[data-id="'+trgetDataId+'"]').attr('id','playbox'+trgetDataId);
-    //     $('#mediaPlayingContainer').append($(cln).find('[data-id="'+trgetDataId+'"]'));
-    //     $('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
-    //     //if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);  ;
-    //     //$('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
-    // }
+    if(status == 'add'){
+        let cln = bgPage.$('#directoryEntryContainer').clone(true,true);
+        $(cln).find('[data-id="'+trgetDataId+'"]').attr('id','directoryEntry'+trgetDataId+'playbox');
+        $(cln).find('[data-id="'+trgetDataId+'"] > .mediaPlayer').attr('id','mediaPlayer'+trgetDataId+'playbox');
+        $(cln).find('[data-id="'+trgetDataId+'"] > .mediaPlayer > .play').attr('id','play'+trgetDataId+'playbox');
+        $(cln).find('[data-id="'+trgetDataId+'"] > .mediaPlayer > .defaultBar').attr('id','defaultBar'+trgetDataId+'playbox');
+        $(cln).find('[data-id="'+trgetDataId+'"] > .mediaPlayer > .defaultBar > .progressBar').attr('id','progressBar'+trgetDataId+'playbox');
+        $('#mediaPlayingContainer').append($(cln).find('[data-id="'+trgetDataId+'"]'));
+        $('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+    }
 
-    // if(status == 'remove'){
-    //     $('#mediaPlayingContainer').find('[data-id="'+trgetDataId+'"]').remove();
-    // }
+    if(status == 'remove'){
+        $('#mediaPlayingContainer').find('[data-id="'+trgetDataId+'"]').remove();
+    }
 }
 
+function updatePlayBoxAttribute(trgetDiv,attributeName){
+    let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
+    $('#'+trgetDiv+'playbox').attr(attributeName , attr) ;
+    //if($('#'+trgetDiv+'playbox').attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv+'playbox')[0]);  ;
+}
 /*
 *  connect signal handdle 
 */
