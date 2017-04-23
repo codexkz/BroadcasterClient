@@ -4,7 +4,7 @@
   "description": "This extension is for light's broadcast service",
   "version": "1.0",
   "background": {
-    "page":"background.html"
+    "page":"Background/background.html"
   },
 
   "icons": { 
@@ -16,19 +16,19 @@
   "browser_action": {
     "default_icon": "Icons/stop.png",
     "default_title": "Get start!",
-    "default_popup": "popup.html"
+    "default_popup": "Popup/popup.html"
   },
   
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "file:///*/*"],
       //"css":["chat-window.css"],
-      "js": ["chat-window.js"],
+      "js": ["Windows/chat-window.js"],
       "run_at":"document_end" 
     }
   ],
 
-  "web_accessible_resources":["video-window.html","video-window.css","chat-window.html","chat-window.css"],
+  "web_accessible_resources":["Windows/video-window.html","Windows/video-window.css","Windows/chat-window.html","Windows/chat-window.css"],
 
   "permissions": [
     "management",

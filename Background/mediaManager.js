@@ -4,12 +4,12 @@
     mediaManager = new MediaManager() ;
 
     function MediaManager(){
-        var htmlFileURL = chrome.runtime.getURL('mediaPlayer.html');
+        var htmlFileURL = chrome.runtime.getURL('Background/mediaPlayer.html');
         var mediaPlayerElement = null ;
 
         (function init(){
             var xhr = new XMLHttpRequest();
-            xhr.open('POST', htmlFileURL ,false);
+            xhr.open('POST', htmlFileURL ,true);
             xhr.onload  = onLoadHanddler ;
             xhr.send();
             function onLoadHanddler(){
