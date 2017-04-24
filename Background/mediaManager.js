@@ -61,8 +61,17 @@
         // this.stop  =function(){
              
         // }
-        
-        this.createMediaplayer =function(elem){
+        this.play(dataID,isSelfListener){
+            if(isSelfListener){
+
+            }
+        }
+
+        this.progress(){
+            
+        }
+
+        this.createMediaplayer =function(elem,audioElem){
             return (function bindEventHanddlerOnNewElement(mediaPlayerElem,parentElem){
                 mediaPlayerElem.dataID          = $(parentElem).attr('data-id');
                 mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play').attr('id','play'+  mediaPlayerElem.dataID ) ;

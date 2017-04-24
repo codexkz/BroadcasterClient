@@ -8,69 +8,24 @@ function Render(){
         let bgPlayBoxNodes = bgPlayBox.childNodes ;
         for(let i = 0 ; i < bgMusicBoxNodes.length ; i++){
             let cln = bgMusicBoxNodes[i].cloneNode(true);
-            if( cln.getAttribute('data-type') == 'Directory' ) cln.addEventListener('click',directoryHanndler);
+            if( cln.getAttribute('data-type') == 'Directory' ) injectDirectoryHanndlerToElement.call(cln);
+            if( cln.getAttribute('data-type') == 'File' )      injectMediaPlayerHanddlersToElement.call(cln);
             popMusicBox.appendChild(cln);
         } 
         for(let j = 0 ; j < bgPlayBoxNodes.length ; j++){
             let cln = bgPlayBoxNodes[j].cloneNode(true);
             popPlayBox.appendChild(cln);
         }  
-
-        function directoryHanndler(){
-             let clickedDiv = this ;
-             if($(clickedDiv).attr('data-status') == 'close' ){
-                    $(popMusicBox).find('.directoryEntry').filter(function(){
-                        let isDegreeDeeper = parseInt($(this).data('degree')) == (parseInt($(clickedDiv).data('degree')) + 1 );
-                        let isChild = $(this).data('directory') == $(clickedDiv).data('id') ;
-                        if(isDegreeDeeper && isChild) bgPage.$('#directoryEntryContainer >.directoryEntry[data-id='+$(this).data('id')+']').attr('data-style','show'); // record to bg
-                        return isDegreeDeeper && isChild;
-                    }).attr('data-style','show');
-
-                    $(popMusicBox).find('.directoryEntry').filter(function(){
-                        let isDegreeSame = $(this).data('degree') == $(clickedDiv).data('degree');
-                        let isSelf = $(this).data('id') == $(clickedDiv).data('id') ;
-                        if( ($(this).data('type') == 'Directory') && isDegreeSame && !isSelf ){
-                            $(this).attr( 'data-status' , 'close' );
-                            bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(this).data('id')+']').attr('data-status','close'); // record to bg
-                        } 
-                        if(isDegreeSame && !isSelf) bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(this).data('id')+']').attr('data-style','hide'); // record to bg
-                        return isDegreeSame && !isSelf;
-                    }).attr('data-style','hide');
-
-                    bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(clickedDiv).data('id')+']').attr('data-status','open'); // record to bg
-                    $(clickedDiv).attr('data-status','open');
-                    return ;
-             }
-
-             if($(clickedDiv).attr('data-status') == 'open'){
-                    $(popMusicBox).find('.directoryEntry').filter(function(){
-                        let isDegreeDeeper = (parseInt($(this).data('degree')) > parseInt($(clickedDiv).data('degree'))) ;
-                        if( ($(this).data('type') == 'Directory') && isDegreeDeeper ){
-                             $(this).attr( 'data-status' , 'close' );
-                             bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(this).data('id')+']').attr('data-status','close'); // record to bg
-                        }
-                        if(isDegreeDeeper) bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(this).data('id')+']').attr('data-style','hide'); // record to bg
-                        return isDegreeDeeper;
-                    }).attr('data-style','hide');
-
-                    $(popMusicBox).find('.directoryEntry').filter(function(){
-                        let isDegreeSame =  parseInt($(this).data('degree')) == (parseInt($(clickedDiv).data('degree')) );
-                        let isDirectorySame = $(this).data('directory') == $(clickedDiv).data('directory');
-                        if(isDegreeSame && isDirectorySame) bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(this).data('id')+']').attr('data-style','show'); // record to bg
-                        return isDegreeSame && isDirectorySame;
-                    }).attr('data-style','show');
-
-                     bgPage.$('#directoryEntryContainer > .directoryEntry[data-id='+$(clickedDiv).data('id')+']').attr('data-status','close'); // record to bg
-                    $(clickedDiv).attr('data-status','close');
-                    return ;
-             }
-                
-        }
     }
-
-    
 }
+
 })();
+
+
+
+
+
+
 
 /*
 *  MutationObserver bgPage is changing , if true refresh the list 

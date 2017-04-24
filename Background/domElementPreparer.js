@@ -42,7 +42,7 @@ function DomElementPreparer(){
                 audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
                 document.getElementById('audioContainer').appendChild( audioElem );
                 //document.getElementById('audioControlerContainer').appendChild( elem );
-                $(elem).append(mediaManager.createMediaplayer(elem));
+                $(elem).append(mediaManager.createMediaplayer(elem,audioElem));
         }
         return elem;
     }//end-createDirectoryEntryDiv()
