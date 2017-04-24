@@ -155,6 +155,10 @@
     color: dimgrey;
 }
 
+.directoryEntry[data-style=hide]{
+    display: none;
+}
+
 /*.directoryEntry[data-type=File]:active{
     background-color: honeydew;
     border-color: honeydew;

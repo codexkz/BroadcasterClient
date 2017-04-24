@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "file:///*/*"],
-      //"css":["chat-window.css"],
+      //"css":["Windows/chat-window.css"],
       "js": ["Windows/chat-window.js"],
       "run_at":"document_end" 
     }

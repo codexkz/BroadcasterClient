@@ -3,11 +3,11 @@
 var style = document.createElement('link');
     style.rel = 'stylesheet';
     style.type = 'text/css';
-    style.href = chrome.extension.getURL('chat-window.css');
+    style.href = chrome.extension.getURL('Windows/chat-window.css');
 (document.head||document.documentElement).appendChild(style);
 
 //html injection
-var htmlFileURL = chrome.runtime.getURL('chat-window.html');
+var htmlFileURL = chrome.runtime.getURL('Windows/chat-window.html');
 var htmlString = '' ;
 var xhr = new XMLHttpRequest();
     xhr.open('POST', htmlFileURL ,  true );
