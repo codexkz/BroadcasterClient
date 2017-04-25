@@ -8,9 +8,9 @@ function Render(){
         let bgPlayBoxNodes = bgPlayBox.childNodes ;
         for(let i = 0 ; i < bgMusicBoxNodes.length ; i++){
             let cln = bgMusicBoxNodes[i].cloneNode(true);
+            popMusicBox.appendChild(cln);
             if( cln.getAttribute('data-type') == 'Directory' ) injectDirectoryHanndlerToElement.call(cln);
             if( cln.getAttribute('data-type') == 'File' )      injectMediaPlayerHanddlersToElement.call(cln);
-            popMusicBox.appendChild(cln);
         } 
         for(let j = 0 ; j < bgPlayBoxNodes.length ; j++){
             let cln = bgPlayBoxNodes[j].cloneNode(true);
@@ -20,11 +20,6 @@ function Render(){
 }
 
 })();
-
-
-
-
-
 
 
 /*
@@ -48,10 +43,10 @@ function musicBoxMutationHandler (mutationRecords) {
     for(var i in mutationRecords){
       if(mutationRecords[i].type == 'attributes'){
             // updatePlayBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
-            // updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
+            updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
       }
       if(mutationRecords[i].type == 'childList') {
-            // updateMusicBoxChildList(mutationRecords[i].target.id );
+            updateMusicBoxChildList(mutationRecords[i].target.id );
       } 
           
     } 
@@ -72,49 +67,18 @@ function playBoxMutationHandler(mutationRecords){
 
 
 
-// function setMediaPlayerShowAffect(elem){
-//           elem.addEventListener('mouseenter',changeHightWrapper);
-//           elem.addEventListener('mouseleave',changeHightWrapper);
-//           elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
-//           var originHeight = $(elem).css('height');
-//           $(elem).css('height',originHeight);
-//           function changeHightWrapper(e){
-//               changeHight.call(elem,e,originHeight);
-//           }
-//  } 
 
-// function changeHight(e,originHeight){
-//    if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
-//          $(this).css('height',(parseInt(originHeight) + 200) + 'px');
-//          $(this).css('display','block');
-//          $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-//             $(this).find('.mediaPlayer').css('display','block');
-//          });
-//          return ;
-//    }
-//    if((e.type !='mouseenter')){
-//          $(this).css('height',originHeight);
-//          $(this).css('display','block');
-//          $(this).find('.mediaPlayer').css('display','none');
-//          $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-//             $(this).find('.mediaPlayer').css('display','none');
-//          });
-//          return ;
-//    }
-// }
+function updateMusicBoxChildList(trgetDiv){
+    let cln = bgPage.$('#'+trgetDiv).clone(true,true);
+    $('#'+trgetDiv).replaceWith(cln) ;
+    $('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+}
 
-
-// function updateMusicBoxChildList(trgetDiv){
-//     let cln = bgPage.$('#'+trgetDiv).clone(true,true);
-//     $('#'+trgetDiv).replaceWith(cln) ;
-//     $('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
-// }
-
-// function updateMusicBoxAttribute(trgetDiv,attributeName){
-//     let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
-//     $('#'+trgetDiv).attr(attributeName , attr) ;
-//     if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);
-// }
+function updateMusicBoxAttribute(trgetDiv,attributeName){
+    let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
+    $('#'+trgetDiv).attr(attributeName , attr) ;
+    if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);
+}
 
 // function updatePlayBoxChildList(trgetDataId,status){
 //     if(status == 'add'){
