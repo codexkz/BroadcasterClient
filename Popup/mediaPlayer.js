@@ -1,7 +1,6 @@
 
 function injectDirectoryHanndlerToElement() {
 		this.addEventListener('click',function (){
-            console.log('sdfsdfji');
              let clickedDiv = this ;
              if($(clickedDiv).attr('data-status') == 'close' ){
                     $(popMusicBox).find('.directoryEntry').filter(function(){
@@ -52,43 +51,14 @@ function injectDirectoryHanndlerToElement() {
 
 function injectMediaPlayerHanddlersToElement () {
 
-         setMediaPlayerShowAffect(this);
 
 		 $(this).find('.play').on('click',function(){
-		 		bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true);
+		 		bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true); // record to bg
 		 });
 
 		 $(this).find('.defaultBar').on('click',function(){
-		 		bgPage.mediaManager.progress($(this).parent().parent().attr('data-id'),true);
+		 		bgPage.mediaManager.progress($(this).parent().parent().attr('data-id'),true); // record to bg
 		 });
 
 }
 
-function setMediaPlayerShowAffect (elem){
-          elem.addEventListener('mouseenter',changeHightWrapper);
-          elem.addEventListener('mouseleave',changeHightWrapper);
-          elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
-          let originHeight = $(elem).css('height');
-          $(elem).css('height',originHeight);
-          function changeHightWrapper(e){
-              changeHight.call(elem,e,originHeight);
-          }
- } 
-
-function changeHight (e,originHeight){
-   if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
-         $(this).css('height',(parseInt(originHeight) + 200) + 'px');
-         $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-            $(this).find('.mediaPlayer').css('display','block');
-         });
-         return ;
-   }
-   if((e.type !='mouseenter')){
-         $(this).css('height',originHeight);
-         $(this).find('.mediaPlayer').css('display','none');
-         $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-            $(this).find('.mediaPlayer').css('display','none');
-         });
-         return ;
-   }
-}

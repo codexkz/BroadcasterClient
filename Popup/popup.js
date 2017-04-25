@@ -1,7 +1,6 @@
 /*
 *  popup.html init 
 */
-
 (function init(){
 
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -10,7 +9,7 @@
             // Get the previous status
             //let imageObj = {path : {"128": "Icons/active.png"}};
             
-            render.init();
+            popContainerRender.init();
 
             if(controlerSocket && controlerSocket.readyState ==1)  connectSuccessFunc();
             if(controlerSocket && controlerSocket.readyState ==3)  connectFailFunc();
@@ -33,7 +32,6 @@
 /*
 *  pickedFiles 
 */
-
 function handlePickedFiles(e){
     var directorySystem  ;
     directorySystem = directoryManager.createDirectorySystem(e.target.files);
@@ -42,13 +40,15 @@ function handlePickedFiles(e){
     while (bgMusicBox.firstChild) bgMusicBox.removeChild(bgMusicBox.firstChild);
     while (bgPlayBox.firstChild)  bgPlayBox.removeChild(bgPlayBox.firstChild);
     while (bgAudioes.firstChild)  bgAudioes.removeChild(bgAudioes.firstChild);
+    bgContainerObserver.unobserve(); 
 
     bgPage.domElementPreparer.init(directorySystem.getRootDirectoryEntry(),bgMusicBox);
-    render.init();
+    popContainerRender.init();
 }
 
-
-// Change playlist mode 
+/*
+*  Change playlist mode 
+*/
 $('#audioWindow-hide').on('click',changeMode);
 $('#audioWindow-hide').on('mouseleave',changeMode);
 
@@ -66,7 +66,6 @@ function changeMode(e){
 /*
 *  connect signal handdle 
 */
-
 function handleConnect(e){
     let channelID       = $('#channelID').val();
     let channelPassword = $('#channelPassword').val();

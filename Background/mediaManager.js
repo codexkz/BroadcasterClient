@@ -65,6 +65,7 @@
             if(isSelfListener){
                 let mediaPlayerElem = $('#directoryEntryContainer > [data-id='+dataID+'] > .mediaPlayer')[0];
                 let mediaElem       = $('#audioContainer > [data-id='+ dataID +']')[0] ;
+                console.log(mediaElem.paused +' : '+ mediaElem.ended );
                     if(!mediaElem.paused && !mediaElem.ended){
                         mediaElem.pause();
                         mediaPlayerElem.playbutton[0].textContent='play';

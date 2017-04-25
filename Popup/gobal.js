@@ -13,4 +13,5 @@ var popMusicBox      = document.getElementById('directoryEntryContainer');
 var popPlayBox       = document.getElementById('mediaPlayingContainer');
 
 
-var render           ;
+var popContainerRender  ;
+var bgContainerObserver ;
