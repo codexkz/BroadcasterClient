@@ -52,12 +52,16 @@ function injectDirectoryHanndlerToElement() {
 function injectMediaPlayerHanddlersToElement () {
 
 
-		 $(this).find('.play').on('click',function(){
+		 $(this).find('.play').on('click',function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
 		 		bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true); // record to bg
 		 });
 
-		 $(this).find('.defaultBar').on('click',function(){
-		 		bgPage.mediaManager.progress($(this).parent().parent().attr('data-id'),true); // record to bg
+		 $(this).find('.defaultBar').on('click',function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
+		 		bgPage.mediaManager.progress($(this).parent().parent().attr('data-id'),true,e.clientX); // record to bg
 		 });
 
 }

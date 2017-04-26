@@ -185,77 +185,103 @@ input{
 /*cofig bar*/
 #directoryEntryWindow{
   min-width:inherit;
-  padding-bottom: 35px;
+  /*padding-bottom: 35px;*/
 }   
 
+
+
 /*playlist*/
-#audioWindow{
-   position: fixed;
+#playBoxWindow{
    min-width:inherit;
    width: 100%;
    min-height: 25px;
    max-height: 100%;
-   bottom: 5px;
    background-color: aliceblue;
    border-color: aliceblue;
    border-top: white;
    border-bottom: darkgrey;
-   border-width: 1px;
+   border-width: 1px 0px 1px 0px;
    border-style: solid;
    border-radius: 5px;
    overflow-y: scroll;
 }
 
-/*#audioWindow:active{
-   position: fixed;
+#playBoxWindow:active{
    min-width:inherit;
    width: 100%;
    min-height: 25px;
    max-height: 100%;
-   bottom: 5px;
    background-color: aliceblue;
    border-color: aliceblue;
    border-top: white;
-   border-bottom: white;
-   border-width: 1px;
+   border-width: 1px 0px 1px 0px;
    border-style: solid;
    border-radius: 5px;
    overflow-y: scroll;
-}      */
+   transition: height 0.35s ease;
+}  
 
-#audioWindow-hide{
-   position: fixed;
+/*#playBoxWindow:has(#mediaPlayingContainer){
    min-width:inherit;
    width: 100%;
    min-height: 25px;
    max-height: 25px;
-   bottom: 5px;
    background-color: aliceblue;
    border-color: aliceblue;
    border-bottom: darkgrey;
-   border-width: 1px;
+   border-width: 1px 0px 1px 0px;
+   border-style: solid;
+   border-radius: 5px;
+   overflow-y: scroll;
+   transition: height 0.35s ease;
+}*/
+
+#playBoxWindow-hide{
+   min-width:inherit;
+   width: 100%;
+   min-height: 25px;
+   max-height: 25px;
+   background-color: aliceblue;
+   border-color: aliceblue;
+   border-bottom: darkgrey;
+   border-width: 1px 0px 1px 0px;
    border-style: solid;
    border-radius: 5px;
    overflow-y: scroll;
    transition: height 0.35s ease;
 }  
 
-#audioWindow-hide:active{
-   position: fixed;
+#playBoxWindow-hide:active{
    min-width:inherit;
    width: 100%;
    min-height: 25px;
    max-height: 25px;
-   bottom: 5px;
    background-color: aliceblue;
    border-color: aliceblue;
    border-top: white;
-   border-width: 1px;
+   border-width: 1px 0px 1px 0px;
    border-style: solid;
    border-radius: 5px;
    overflow-y: scroll;
    transition: height 0.35s ease;
 }  
+
+/*#playBoxWindow-hide:not(#mediaPlayingContainer:active){
+   min-width:inherit;
+   width: 100%;
+   min-height: 25px;
+   max-height: 25px;
+   background-color: aliceblue;
+   border-color: aliceblue;
+   border-bottom: darkgrey;
+   border-width: 1px 0px 1px 0px;
+   border-style: solid;
+   border-radius: 5px;
+   overflow-y: scroll;
+   transition: height 0.35s ease;
+}*/
+
+
 
 /*barTrack*/
 .barTrack_x{

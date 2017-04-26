@@ -49,16 +49,16 @@ function handlePickedFiles(e){
 /*
 *  Change playlist mode 
 */
-$('#audioWindow-hide').on('click',changeMode);
-$('#audioWindow-hide').on('mouseleave',changeMode);
+$('#playBoxWindow-hide').on('click',changeMode);
+$('#playBoxWindow-hide').on('mouseleave',changeMode);
 
 function changeMode(e){
-    if(($(this).attr('id')=='audioWindow-hide') &&  (e.type != 'mouseleave')){
-         $(this).attr('id','audioWindow');
+    if(($(this).attr('id')=='playBoxWindow-hide') &&  (e.type != 'mouseleave')){
+         $(this).attr('id','playBoxWindow');
          return;
     }
-    if($(this).attr('id')=='audioWindow'){
-         $(this).attr('id','audioWindow-hide');
+    if($(this).attr('id')=='playBoxWindow'){
+         $(this).attr('id','playBoxWindow-hide');
          return;
     }
 }

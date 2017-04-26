@@ -28,6 +28,7 @@ function DomElementPreparer(){
             elem.setAttribute( 'data-degree' , directoryEntry.degree);
             elem.setAttribute( 'data-status' , 'close' );
             elem.setAttribute( 'data-style' , 'hide' );
+            elem.setAttribute( 'data-name' , directoryEntry.entity.name );
             elem.appendChild( text );
         if(directoryEntry.isDirectory){
                 createDirectory( directoryEntry , container);

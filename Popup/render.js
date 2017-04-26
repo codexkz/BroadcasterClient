@@ -4,7 +4,6 @@ popContainerRender = new PopContainerRender();
 
 function PopContainerRender(){
     this.init =function(){
-        //bgContainerObserver.disconnect();
         let bgMusicBoxNodes = bgMusicBox.childNodes ;
         let bgPlayBoxNodes = bgPlayBox.childNodes ;
         for(let i = 0 ; i < bgMusicBoxNodes.length ; i++){
@@ -17,41 +16,15 @@ function PopContainerRender(){
             }
         } 
         for(let i = 0 ; i < bgPlayBoxNodes.length ; i++){
-            let cln = bgPlayBoxNodes[i].cloneNode(true);
-            popPlayBox.appendChild(cln);
+            let cln = createPlayBoxMediaPlayer(bgPlayBoxNodes[i].getAttribute('playing-data-id'));
+            $(popPlayBox).append(cln);
+            setMediaPlayerShowAffect(cln);
+            injectMediaPlayerHanddlersToElement.call(cln);
         }  
 
         bgContainerObserver.observe(); 
     }
 
-    function setMediaPlayerShowAffect (elem){
-                elem.addEventListener('mouseenter',changeHightWrapper);
-                elem.addEventListener('mouseleave',changeHightWrapper);
-                elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
-                let originHeight = $(elem).css('height');
-                $(elem).css('height',originHeight);
-                function changeHightWrapper(e){
-                    changeHight.call(elem,e,originHeight);
-                }
-        } 
-
-    function changeHight (e,originHeight){
-            if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
-                    $(this).css('height',(parseInt(originHeight) + 200) + 'px');
-                    $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-                        $(this).find('.mediaPlayer').css('display','block');
-                    });
-                    return ;
-            }
-            if((e.type !='mouseenter')){
-                    $(this).css('height',originHeight);
-                    $(this).find('.mediaPlayer').css('display','none');
-                    $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
-                        $(this).find('.mediaPlayer').css('display','none');
-                    });
-                    return ;
-            }
-    }
 }
 
 })();
@@ -85,14 +58,14 @@ function PopContainerRender(){
 
         function musicBoxMutationHandler (mutationRecords) {
             for(var i in mutationRecords){
-                    console.log(mutationRecords[i].target.id+':'+mutationRecords[i].type);
-            if(mutationRecords[i].type == 'attributes'){
-                    // updatePlayBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
-                    updateMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
-            }
-            if(mutationRecords[i].type == 'childList') {
-                    updateMusicBoxChildList(mutationRecords[i].target.id );
-            } 
+                console.log(mutationRecords[i].target.id+':'+ mutationRecords[i].type);
+                if(mutationRecords[i].type == 'attributes'){
+                        updatePlayBoxAndMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
+                }
+                if(mutationRecords[i].type == 'childList') {
+                        //console.log(mutationRecords[i].target.id+':'+ mutationRecords[i].addedNodes);
+                        updateMusicBoxChildList(mutationRecords[i].target.id , mutationRecords[i].addedNodes );
+                } 
                 
             } 
         }
@@ -100,58 +73,86 @@ function PopContainerRender(){
         function playBoxMutationHandler(mutationRecords){
             for(var i in mutationRecords){
                 if(mutationRecords[i].type == 'childList'){
-                    //   for( var j =0 ; j < mutationRecords[i].addedNodes.length ; j++ ){
-                    //       updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
-                    //   }
-                    //   for( var k =0 ; k < mutationRecords[i].removedNodes.length ; k++ ){
-                    //       updatePlayBoxChildList(mutationRecords[i].removedNodes[k].getAttribute('playing-data-id'),'remove');
-                    //   }
+                      for( var j =0 ; j < mutationRecords[i].addedNodes.length ; j++ ){
+                          updatePlayBoxChildList(mutationRecords[i].addedNodes[j].getAttribute('playing-data-id'),'add');
+                      }
+                      for( var k =0 ; k < mutationRecords[i].removedNodes.length ; k++ ){
+                          updatePlayBoxChildList(mutationRecords[i].removedNodes[k].getAttribute('playing-data-id'),'remove');
+                      }
                 }  
             } 
         }
 
-
-
-
-        function updateMusicBoxChildList(trgetDiv){
-            let cln = bgPage.$('#'+trgetDiv)[0].cloneNode(true);
-            let expando = jQuery['expando']+'1';
-            console.log(expando);
-            console.log(cln); 
-            console.log($('#'+trgetDiv)); 
-            $(cln)[0][expando] = $('#'+trgetDiv)[0][expando] ;
-            console.log($(cln)); 
-            //$('#'+trgetDiv).replaceWith(cln) ;
-            //console.log($('#'+trgetDiv)); 
-            //$('#'+trgetDiv).find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
+        function updateMusicBoxChildList(trgetDiv,nodes){
+             for (let i = 0 ; i < nodes.length ; i++ ) {
+                 
+                console.log(nodes[i]+' : '+$(nodes[i]));
+                $('#'+trgetDiv).empty();                //todo : wired
+                $('#'+trgetDiv).append(nodes[i]) ;
+            }
+        }
+        function updatePlayBoxChildList(trgetDataId,status){
+            if(status == 'add'){
+                let cln = createPlayBoxMediaPlayer(trgetDataId);
+                $(popPlayBox).append(cln);
+                setMediaPlayerShowAffect(cln);
+                injectMediaPlayerHanddlersToElement.call(cln);
+            }
+            if(status == 'remove'){
+                $(popPlayBox).find('[data-id="'+trgetDataId+'"]').remove();
+                if($(popPlayBox).is(':empty')) $('#playBoxWindow').attr('id','playBoxWindow-hide');
+            }
         }
 
-        function updateMusicBoxAttribute(trgetDiv,attributeName){
+        function updatePlayBoxAndMusicBoxAttribute(trgetDiv,attributeName){
             let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
             $('#'+trgetDiv).attr(attributeName , attr) ;
-            //if($('#'+trgetDiv).attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv)[0]);
+            $('#'+trgetDiv+'playbox').attr(attributeName , attr) ;
         }
-
-        // function updatePlayBoxChildList(trgetDataId,status){
-        //     if(status == 'add'){
-        //         let cln = bgPage.$('#directoryEntryContainer').clone(true,true);
-        //         $(cln).find('[data-id='+trgetDataId+']').attr('id','directoryEntry'+trgetDataId+'playbox');
-        //         $(cln).find('[data-id='+trgetDataId+'] > .mediaPlayer').attr('id','mediaPlayer'+trgetDataId+'playbox');
-        //         $(cln).find('[data-id='+trgetDataId+'] > .mediaPlayer > .play').attr('id','play'+trgetDataId+'playbox');
-        //         $(cln).find('[data-id='+trgetDataId+'] > .mediaPlayer > .defaultBar').attr('id','defaultBar'+trgetDataId+'playbox');
-        //         $(cln).find('[data-id='+trgetDataId+'] > .mediaPlayer > .defaultBar > .progressBar').attr('id','progressBar'+trgetDataId+'playbox');
-        //         $('#mediaPlayingContainer').append($(cln).find('[data-id="'+trgetDataId+'"]'));
-        //         $('#mediaPlayingContainer').find('div[data-type="File"]').each(function(){ setMediaPlayerShowAffect(this); });
-        //     }
-        //     if(status == 'remove'){
-        //         $('#mediaPlayingContainer').find('[data-id="'+trgetDataId+'"]').remove();
-        //     }
-        // }
-
-        // function updatePlayBoxAttribute(trgetDiv,attributeName){
-        //     let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
-        //     $('#'+trgetDiv+'playbox').attr(attributeName , attr) ;
-        //     //if($('#'+trgetDiv+'playbox').attr('data-type')=='File') setMediaPlayerShowAffect($('#'+trgetDiv+'playbox')[0]); 
-        // }
     }
 })();
+
+
+function setMediaPlayerShowAffect (elem){
+        elem.addEventListener('mouseenter',changeHightWrapper);
+        elem.addEventListener('mouseleave',changeHightWrapper);
+        elem.addEventListener('click',function(e){e.stopImmediatePropagation();});
+        let originHeight = $(elem).css('height');
+        $(elem).css('height',originHeight);
+        function changeHightWrapper(e){
+            changeHight.call(elem,e,originHeight);
+        }
+} 
+
+function changeHight (e,originHeight){
+    if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
+            $(this).css('height',(parseInt(originHeight) + 200) + 'px');
+            $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+                $(this).find('.mediaPlayer').css('display','block');
+            });
+            return ;
+    }
+    if((e.type !='mouseenter')){
+            $(this).css('height',originHeight);
+            $(this).find('.mediaPlayer').css('display','none');
+            $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
+                $(this).find('.mediaPlayer').css('display','none');
+            });
+            return ;
+    }
+}
+
+function createPlayBoxMediaPlayer(trgetDataId){
+    let text = document.createTextNode(bgPage.$('#directoryEntryContainer > [data-id='+trgetDataId+']').attr('data-name') );
+    let cln = document.createElement('div');
+    $(cln).append(text);
+    $(cln).append(bgPage.mediaManager.getMediaPlayerElementTemplet());
+    $(cln).attr('data-type','File');
+    $(cln).attr('data-id',trgetDataId);
+    $(cln).attr('class','directoryEntry');
+    $(cln).find('.mediaPlayer').attr('id','mediaPlayer'+trgetDataId+'playbox');
+    $(cln).find('.mediaPlayer > .play').attr('id','play'+trgetDataId+'playbox').text('pause');
+    $(cln).find('.mediaPlayer > .defaultBar').attr('id','defaultBar'+trgetDataId+'playbox');
+    $(cln).find('.mediaPlayer > .defaultBar > .progressBar').attr('id','progressBar'+trgetDataId+'playbox');
+    return cln ;
+}
