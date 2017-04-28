@@ -63,19 +63,22 @@
         // }
         this.play = function(dataID,isSelfListener){
             if(isSelfListener){
+                console.log( $('#directoryEntryContainer').find('[data-id='+dataID+']'));
+                console.log( $('#directoryEntryContainer > [data-id='+dataID+'] > .mediaPlayer'));
                 let mediaPlayerElem = $('#directoryEntryContainer > [data-id='+dataID+'] > .mediaPlayer')[0];
                 let mediaElem       = $('#audioContainer > [data-id='+ dataID +']')[0] ;
                 if(!mediaElem.paused && !mediaElem.ended){
                     mediaElem.pause();
-                    mediaPlayerElem.playbutton[0].innerText = 'play';
                     //$(mediaPlayerElem).parent().attr( 'data-status' , 'close' );
+                    //$('#directoryEntryContainer').find('[data-id='+dataID+'] > .mediaPlayer > .play').text('play');
+                    mediaPlayerElem.playbutton[0].textContent = 'play';
                     mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                     window.clearInterval(mediaPlayerElem.updateCounter);
                 }else{
                     mediaElem.play();
                     //$(mediaPlayerElem).parent().attr( 'data-status' , 'open' );
-                    console.log(mediaPlayerElem.playbutton);
-                    mediaPlayerElem.playbutton[0].innerText = 'pause';
+                    //$('#directoryEntryContainer').find('[data-id='+dataID+'] > .mediaPlayer > .play').text('pause');
+                    mediaPlayerElem.playbutton[0].textContent = 'pause';
                     mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
                     mediaPlayerElem.updateCounter = window.setInterval(update,250);
                 }
@@ -87,8 +90,8 @@
                     }else{
                         mediaPlayerElem.progressBar[0].style.width='0%';
                         //$(mediaPlayerElem).parent().attr( 'data-status' , 'close' );
-                        console.log(mediaPlayerElem.playbutton);
-                        mediaPlayerElem.playButton[0].innerText = 'play';
+                        mediaPlayerElem.playbutton[0].textContent = 'play';
+                        mediaPlayerElem.playbutton[0].innerText = 'play';
                         mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                     }
                 }
