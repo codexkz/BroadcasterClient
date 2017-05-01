@@ -61,24 +61,35 @@
         // this.stop  =function(){
              
         // }
+
+        
         this.play = function(dataID,isSelfListener){
             if(isSelfListener){
-                console.log( $('#directoryEntryContainer').find('[data-id='+dataID+']'));
-                console.log( $('#directoryEntryContainer > [data-id='+dataID+'] > .mediaPlayer'));
                 let mediaPlayerElem = $('#directoryEntryContainer > [data-id='+dataID+'] > .mediaPlayer')[0];
                 let mediaElem       = $('#audioContainer > [data-id='+ dataID +']')[0] ;
                 if(!mediaElem.paused && !mediaElem.ended){
-                    mediaElem.pause();
+                    // if(mediaElem.getAttribute('type').split('/')[0] == 'video'){
+                    //     chrome.windows.remove(parseInt($(mediaPlayerElem).parent().attr('data-window'))); 
+                    // }else{
+                        mediaElem.pause();
+                    //}
                     //$(mediaPlayerElem).parent().attr( 'data-status' , 'close' );
-                    //$('#directoryEntryContainer').find('[data-id='+dataID+'] > .mediaPlayer > .play').text('play');
-                    mediaPlayerElem.playbutton[0].textContent = 'play';
+                    mediaPlayerElem.playbutton[0].innerText = 'play';
                     mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                     window.clearInterval(mediaPlayerElem.updateCounter);
                 }else{
-                    mediaElem.play();
+                    // if(mediaElem.getAttribute('type').split('/')[0] == 'video'){
+                    //     let videoFile        = '?file='     + mediaElem.getAttribute('src');
+                    //     let videoTitle       = '&title='    + mediaElem.getAttribute('data-media-name');
+                    //     let config   =  {  url:chrome.runtime.getURL('Windows/video-window.html') + videoFile + videoTitle , type:'popup' ,width:0 , height:0 }  ;
+                    //     let callback = function(window){   $(mediaPlayerElem).parent().attr('data-window',window.id); } ;
+                    //     chrome.runtime.onMessage.addListener(setVideoConfigAfterWindowAlready);
+                    //     chrome.windows.create(config , callback );
+                    // }else{
+                        mediaElem.play();
+                    //}
                     //$(mediaPlayerElem).parent().attr( 'data-status' , 'open' );
-                    //$('#directoryEntryContainer').find('[data-id='+dataID+'] > .mediaPlayer > .play').text('pause');
-                    mediaPlayerElem.playbutton[0].textContent = 'pause';
+                    mediaPlayerElem.playbutton[0].innerText = 'pause';
                     mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
                     mediaPlayerElem.updateCounter = window.setInterval(update,250);
                 }
@@ -90,7 +101,6 @@
                     }else{
                         mediaPlayerElem.progressBar[0].style.width='0%';
                         //$(mediaPlayerElem).parent().attr( 'data-status' , 'close' );
-                        mediaPlayerElem.playbutton[0].textContent = 'play';
                         mediaPlayerElem.playbutton[0].innerText = 'play';
                         mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
                     }
@@ -113,7 +123,7 @@
         this.createMediaplayer =function(parentElem){
             let elem = mediaPlayerElement.cloneNode(true);
             elem.dataID          = $(parentElem).attr('data-id');
-            elem.playbutton      = $(elem).find('.play').attr('id','play'+  elem.dataID ) ;
+            elem.playbutton      = $(elem).find('.play').attr('id','play'+  elem.dataID );
             elem.defaultBar      = $(elem).find('.defaultBar').attr('id','defaultBar'+ elem.dataID ) ;
             elem.progressBar     = $(elem).find('.progressBar').attr('id','progressBar'+ elem.dataID );
             $(elem).attr('id','mediaPlayer'+  elem.dataID ) ;
@@ -123,93 +133,7 @@
         this.getMediaPlayerElementTemplet = function(){
             return mediaPlayerElement.cloneNode(true);
         }
-        // this.createMediaplayer =function(elem,audioElem){
-        //     return (function bindEventHanddlerOnNewElement(mediaPlayerElem,parentElem){
-        //         mediaPlayerElem.dataID          = $(parentElem).attr('data-id');
-        //         mediaPlayerElem.playbutton      = $(mediaPlayerElem).find('.play').attr('id','play'+  mediaPlayerElem.dataID ) ;
-        //         mediaPlayerElem.defaultBar      = $(mediaPlayerElem).find('.defaultBar').attr('id','defaultBar'+ mediaPlayerElem.dataID ) ;
-        //         mediaPlayerElem.progressBar     = $(mediaPlayerElem).find('.progressBar').attr('id','progressBar'+ mediaPlayerElem.dataID );
-        //         mediaPlayerElem.mediaElement    = $('#audioContainer').find('[data-id="'+ mediaPlayerElem.dataID +'"]')[0] ;
-        //         $(mediaPlayerElem).attr('id','mediaPlayer'+  mediaPlayerElem.dataID ) ;
 
-        //         $(mediaPlayerElem).find('.play').on('click',playButtonHanddler);
-        //         $(mediaPlayerElem).find('.defaultBar').on('click',defaultBarClickedHanddler);
-
-        //         function playButtonHanddler(e){
-        //             e.stopImmediatePropagation();
-        //             if(!mediaPlayerElem.mediaElement.paused && !mediaPlayerElem.mediaElement.ended){
-        //                 mediaPlayerElem.mediaElement.pause();
-        //                 //$(parentElem).attr( 'data-status' , 'close' );
-        //                 mediaPlayerElem.playbutton[0].textContent='play';
-        //                 mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
-        //                 window.clearInterval(mediaPlayerElem.updateCounter);
-        //             }else{
-        //                 mediaPlayerElem.mediaElement.play();
-        //                 //$(parentElem).attr( 'data-status' , 'open' );
-        //                 mediaPlayerElem.playbutton[0].textContent ='pause';
-        //                 mediaManager.insertToMediaPlayingContainer(mediaPlayerElem.dataID);
-        //                 mediaPlayerElem.updateCounter = window.setInterval(update,250);
-        //             }
-
-        //             function update(){
-        //                 if(!mediaPlayerElem.mediaElement.ended){
-        //                     var size = mediaPlayerElem.mediaElement.currentTime/mediaPlayerElem.mediaElement.duration*100;
-        //                     mediaPlayerElem.progressBar[0].style.width=size+'%';
-        //                 }else{
-        //                     mediaPlayerElem.progressBar[0].style.width='0%';
-        //                     //$(parentElem).attr( 'data-status' , 'close' );
-        //                     mediaPlayerElem.playButton[0].textContent='play';
-        //                     mediaManager.removeFromMediaPlayingContainer(mediaPlayerElem.dataID);
-        //                 }
-        //             }
-        //         }
-
-        //         function defaultBarClickedHanddler(e){
-        //             e.stopImmediatePropagation();
-        //             var mouseX = e.clientX-(mediaPlayerElem.defaultBar[0].offsetLeft);
-        //             var defaultBarWidth= 244 ; //parseInt(window.getComputedStyle(mediaPlayerElem.defaultBar,null).getPropertyValue('width'));  //window.getComputedStyle(defaultBar,null).getPropertyValue("width")
-        //             var size = mouseX/defaultBarWidth*100;
-        //             mediaPlayerElem.progressBar[0].style.width = size + '%' ;
-        //             mediaPlayerElem.mediaElement.currentTime = mediaPlayerElem.mediaElement.duration * size / 100 ;
-        //         }
-
-        //         return  mediaPlayerElem ;
-
-        //     })($(mediaPlayerElement).clone(false),elem);
-
-
-            //return newMediaPlayerElement ;
-            
-            //             function fileClickHanddler(){
-            // let originDiv = $('[data-id='+this.getAttribute('data-id')+']');
-            // switch($(originDiv).attr('data-status')) {
-            //     case 'close': 
-            //             if(directoryEntry.entity.type.split('/')[0] == 'video'){
-            //                 let videoFile        = '?file='     + (window.URL.createObjectURL(directoryEntry.entity));
-            //                 let videoTitle       = '&title='    + directoryEntry.entity.name;
-            //                 let config   =  {  url:chrome.runtime.getURL('video.html') + videoFile + videoTitle , type:'popup' ,width:0 , height:0 }  ;
-            //                 let callback = function(window){    $(originDiv).attr('data-window',window.id); } ;
-            //                 chrome.runtime.onMessage.addListener(setVideoConfigAfterWindowAlready);
-            //                 chrome.windows.create(config , callback );
-            //             }else{
-            //                 //Avoid the Promise Error
-            //                 setTimeout(function () {  if (audioElem.paused) audioElem.play(); }, 150 );
-            //                 //audioElem.play(); 
-            //             }
-            //             $(originDiv).attr( 'data-status' , 'open' );
-            //             break;
-            //     case 'open':
-            //             if(directoryEntry.entity.type.split('/')[0] == 'video'){ 
-            //                 chrome.windows.remove(parseInt($(originDiv).attr('data-window'))); 
-            //                 $(originDiv).attr( 'data-status' , 'close' );
-            //             }else{
-            //                 audioElem.pause(); 
-            //                 $(originDiv).attr( 'data-status' , 'close' );
-            //             }
-            //             break;
-            //     default:
-            // }
-        //}//end-fileClickHanddler()
         this.insertToMediaPlayingContainer = function(dataID){
             let targetDivList = $('#mediaPlayingContainer').find('[data-id="'+dataID+'"]');
             if(targetDivList.length == 0 ) $('#mediaPlayingContainer').append($(document.createElement( 'div' )).attr('playing-data-id',dataID));
@@ -231,9 +155,9 @@
         //     }
         // }
 
-        //close vedio window 
-        chrome.tabs.onRemoved.addListener(function (tabId,removeInfo){
-            $('[data-window='+removeInfo.windowId+']').attr( 'data-status' , 'close' );
-        });
+        // //close vedio window 
+        // chrome.tabs.onRemoved.addListener(function (tabId,removeInfo){
+        //     $('[data-window='+removeInfo.windowId+']').attr( 'data-status' , 'close' );
+        // });
     }
 })();

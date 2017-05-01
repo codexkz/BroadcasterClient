@@ -36,14 +36,14 @@ function DomElementPreparer(){
         if(directoryEntry.isFile){
                 let audioElem = document.createElement('audio');
                 audioElem.setAttribute( 'data-id' , directoryEntry.uuid );
-                audioElem.setAttribute( 'data-music-name' , directoryEntry.entity.name );
+                audioElem.setAttribute( 'data-media-name' , directoryEntry.entity.name );
                 audioElem.setAttribute( 'data-status' , 'close' );
                 audioElem.setAttribute( 'loop' , 'loop' );
                 audioElem.setAttribute( 'type' , directoryEntry.entity.type );
                 audioElem.setAttribute( 'src' , window.URL.createObjectURL(directoryEntry.entity) );
                 document.getElementById('audioContainer').appendChild( audioElem );
                 //document.getElementById('audioControlerContainer').appendChild( elem );
-                $(elem).append(mediaManager.createMediaplayer(elem,audioElem));
+                elem.appendChild(mediaManager.createMediaplayer(elem,audioElem));
         }
         return elem;
     }//end-createDirectoryEntryDiv()

@@ -40,12 +40,14 @@ function PopContainerRender(){
         var musicBoxObserver    = new MutationObserver (musicBoxMutationHandler);
         var playBoxObserver     = new MutationObserver (playBoxMutationHandler);
         //var obsConfig           = { childList: true, characterData: true, attributes: true, subtree: true };
-        var musicBoxObserverConfig   = { childList: true,  attributes: true , subtree: true } ;
+        var musicBoxObserverConfig   = { childList: true,  attributes: true , characterData: true, subtree: true} ;
         var playBoxObserverConfig    = { childList: true,  attributes: true } ;
 
         this.observe = function (){
+           
             $(bgMusicBox).each ( function () { musicBoxObserver.observe (this, musicBoxObserverConfig ); } );
             $(bgPlayBox).each ( function () { playBoxObserver.observe (this, playBoxObserverConfig ); } );
+
             console.log('start observe');
         }
 
@@ -58,15 +60,17 @@ function PopContainerRender(){
 
         function musicBoxMutationHandler (mutationRecords) {
             for(var i in mutationRecords){
-                console.log(mutationRecords[i].target.id+':'+ mutationRecords[i].type);
+                // console.log(mutationRecords[i].target.id+':'+ mutationRecords[i].type);
                 if(mutationRecords[i].type == 'attributes'){
                         updatePlayBoxAndMusicBoxAttribute(mutationRecords[i].target.id , mutationRecords[i].attributeName);
                 }
-                if(mutationRecords[i].type == 'childList') {
+                if(mutationRecords[i].type == 'childList' ) {
                         //console.log(mutationRecords[i].target.id+':'+ mutationRecords[i].addedNodes);
                         updateMusicBoxChildList(mutationRecords[i].target.id , mutationRecords[i].addedNodes );
                 } 
-                
+                if(mutationRecords[i].type == 'characterData') {
+                        updatePlayBoxAndMusicBoxCharacterData(mutationRecords[i].target.parentNode.id , mutationRecords[i].target);
+                }
             } 
         }
 
@@ -85,12 +89,11 @@ function PopContainerRender(){
 
         function updateMusicBoxChildList(trgetDiv,nodes){
              for (let i = 0 ; i < nodes.length ; i++ ) {
-                 
-                console.log(nodes[i]+' : '+$(nodes[i]));
                 $('#'+trgetDiv).empty();                //todo : wired
                 $('#'+trgetDiv).append(nodes[i]) ;
             }
         }
+        
         function updatePlayBoxChildList(trgetDataId,status){
             if(status == 'add'){
                 let cln = createPlayBoxMediaPlayer(trgetDataId);
@@ -108,6 +111,10 @@ function PopContainerRender(){
             let attr = bgPage.$('#'+trgetDiv).attr(attributeName);
             $('#'+trgetDiv).attr(attributeName , attr) ;
             $('#'+trgetDiv+'playbox').attr(attributeName , attr) ;
+        }
+
+        function updatePlayBoxAndMusicBoxCharacterData(trgetDiv,characterData){
+            $('#'+trgetDiv).text(characterData.data);
         }
     }
 })();
