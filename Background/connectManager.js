@@ -113,6 +113,13 @@
             return chatSocket ;
         };
 
+        this.getMediaSendSocket =function(mediasockpairid){
+            return null ;
+        }
+
+        this.getMediaReceiveSocket =function(mediasockpairid){
+            return null ;
+        }
 
         this.createControlerSocket = function (successCallback , errorCallback){
             controlerSocket = new ControlerSocket( wsUri +'/ControlerSockect/'+ encodeURI(userUUID) + '/' + encodeURI(channelID)+ '/' + encodeURI(channelPassword) ,successCallback , errorCallback );
@@ -175,7 +182,6 @@
         this.getChannelID =function(){
             return channelID ;
         }
-
     }
 })();
 
@@ -266,18 +272,15 @@ function ChatSocket(connectURL){
 //Upload Media  & Receive Commnad 
 function MediaSendSocket(connectURL){
     let instance = new WebSocket(connectURL);  
+        instance.binaryType = "blob";
         instance.onopen = onOpen ;
         instance.onmessage = onMessage ;
         instance.onclose = onClose ;
         instance.onerror = onError ; 
 
-    instance.doSend = function (messageBody){
-        // let message = connectManager.getMessageHeader();
-        //     message.messageBody = messageBody ;
-        //     message.messageBody.senderName = message.userName;
-        // instance.send(JSON.stringify(message));
+    instance.doSend = function (blob){
+        instance.send(blob);
     };
-
 
     function onOpen(){
         console.log('MediaSendSocket:ConnectSuccess ,' + instance.mediasockpairid );
@@ -299,7 +302,8 @@ function MediaSendSocket(connectURL){
 
 //Download Media  & Send Commnad 
 function MediaReceiveSocket(connectURL){
-    let instance = new WebSocket(connectURL);  
+    let instance = new WebSocket(connectURL);
+        instance.binaryType = "blob";  
         instance.onopen = onOpen ;
         instance.onmessage = onMessage ;
         instance.onclose = onClose ;
@@ -318,6 +322,10 @@ function MediaReceiveSocket(connectURL){
     };
 
     function onMessage(response){
+        if (response.data instanceof Blob) {
+            //get blob data
+            blobhandler(response.data);
+   		}
         // let responseJson = JSON.parse(response.data);
         // chatManager.newMessage(responseJson);
     };  
@@ -330,3 +338,5 @@ function MediaReceiveSocket(connectURL){
     };    
     return instance;  
 }
+
+

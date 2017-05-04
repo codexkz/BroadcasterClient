@@ -133,7 +133,7 @@ function setMediaPlayerShowAffect (elem){
 
 function changeHight (e,originHeight){
     if( ($(this).css('height') == (originHeight)) && (e.type !='mouseleave')){
-            $(this).css('height',(parseInt(originHeight) + 200) + 'px');
+            $(this).css('height',(parseInt(originHeight) + 80) + 'px');
             $(this).one("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function(){
                 $(this).find('.mediaPlayer').css('display','block');
             });

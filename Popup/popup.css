@@ -132,8 +132,8 @@
   }
  
 .directoryEntry[data-type=File]{
-    background-color: honeydew;
-    border-color: honeydew;
+    background-color: Ivory  ;
+    border-color: Ivory  ;
     border-bottom: darkgrey;
     transition: height 0.35s ease;
     border-width: 1px;
@@ -142,8 +142,8 @@
 }
 
 .directoryEntry[data-type=File]:hover{
-    background-color: honeydew;
-    border-color: honeydew;
+    background-color: Ivory  ;
+    border-color: Ivory  ;
     border-bottom: darkgrey;
     border-width: 1px;
     border-style: solid;

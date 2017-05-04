@@ -1,27 +1,169 @@
 .mediaPlayer{
-        display:none;
-        background: lightpink;
-        height: 200px;
-        width: 100%;
+	display:none;
+	width: 100%;
 }
 
 
 .defaultBar{
-	border:1px solid steelblue;
+	position:relative;
+	border:1px solid LightBlue           ;
 	width:244px;
-	height:21px;
+	height:11px;
 	float:left;
 	padding:2px;
+	margin-top: 10px;
 }
 
 .progressBar{
-	background-color:steelblue;
+	background-color:LightBlue           ;
 	width:0px;
-	height:21px;
+	height:11px;
 }
 
 .play{
-	background: lightyellow;
+	position:relative;
     height: 20px;
-    width: 100%;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightCyan ;
+    border-color: LightCyan ;
+    border-bottom: darkgrey;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.play:active{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightBlue;
+    border-color: LightBlue;
+    border-top: LightBlue;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+	padding-top: 1px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.sync{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightBlue;
+    border-color: LightBlue;
+    border-bottom: darkgrey;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.sync:active{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightCyan;
+    border-color: LightCyan;
+    border-top: honeydew;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+	padding-top: 1px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.loop{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightBlue;
+    border-color: LightBlue;
+    border-bottom: darkgrey;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.loop:active{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightCyan;
+    border-color: LightCyan;
+    border-top: honeydew;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+	padding-top: 1px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.fade{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightBlue;
+    border-color: LightBlue;
+    border-bottom: darkgrey;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
+}
+
+.fade:active{
+	position:relative;
+    height: 20px;
+    width:  50px;
+	float:left;
+	 
+	background-color: LightCyan;
+    border-color: LightCyan;
+    border-top: honeydew;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    margin: 5px;
+	padding-top: 1px;
+    text-align: center;
+    font-family: Calibri;
+    color: dimgrey;
 }

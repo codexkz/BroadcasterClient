@@ -7,7 +7,7 @@
         // Great success! All the File APIs are supported.
         document.addEventListener("DOMContentLoaded", function (){
             // Get the previous status
-            //let imageObj = {path : {"128": "Icons/active.png"}};
+            let imageObj = {path : {"128": "Icons/active.png"}};
             
             popContainerRender.init();
 
