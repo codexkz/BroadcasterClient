@@ -55,8 +55,16 @@ function injectMediaPlayerHanddlersToElement () {
 		 $(this).find('.play').on('click',function(e){
                 e.preventDefault();
                 e.stopImmediatePropagation();
-		 		bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true); // record to bg
+                if(isfirstplay){
+                    bgPage.mediaManager.createMediasocketRequest(function(mediasockpairid){
+                        doAfterGetMediaSockPairID(mediasockpairid);
+                    });
+                }
+                function doAfterGetMediaSockPairID(){
+                    bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true); // record to bg
+                }
 		 });
+
 
 		 $(this).find('.defaultBar').on('click',function(e){
                 e.preventDefault();

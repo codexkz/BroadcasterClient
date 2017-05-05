@@ -153,19 +153,17 @@
             if(targetDivList.length > 0 )  $(targetDivList).remove();
         }
         
-        function mediasocketSendHanddler (){
 
-            console.log('newMessage create message : ' + request.message );
+        function createMediasocketRequest (){
+
             let messageJson = {
                 'senderName'  : ''                    ,
-                'action'      : request.action        ,
-                'actionType'  : request.actionType    ,
-                'target'      : request.target        ,
-                'timestamp'   : request.timestamp     ,
-                'oldtimestamp': request.oldtimestamp  ,
-                'messageID'   : request.messageID     ,
-                'messagetype' : request.messagetype   ,
-                'message'     : request.message    
+                'action'      : 'openMediaSocket'     ,
+                //'actionType'  : request.actionType  ,
+                'target'      : 'all'                 ,
+                'data'        : {
+                    'channelID':'sdfdfasd'
+                }    
             };
             connectManager.getControlerSocket().doSend(messageJson);
 
