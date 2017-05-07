@@ -4,8 +4,9 @@
     mediaManager = new MediaManager() ;
 
     function MediaManager(){
-        var htmlFileURL = chrome.runtime.getURL('Popup/mediaPlayer.html');
-        var mediaPlayerElement = null ;
+        let htmlFileURL = chrome.runtime.getURL('Popup/mediaPlayer.html');
+        let mediaPlayerElement = null ;
+
 
         (function init(){
             var xhr = new XMLHttpRequest();
@@ -40,10 +41,6 @@
         //receive
         //接收從controler送來的訊息,開啟新playlist標籤，並且連到指定的空間取得音樂路徑，下載完成後通知已下載完成
         //控制曲目方式
-
-        this.newMedia = function(){
-
-        }
 
         this.closeMedia = function(){
 
@@ -154,37 +151,85 @@
         }
         
 
-        function createMediasocketRequest (){
-
+        this.createMediasocketRequest = function(dataID,dataName){
             let messageJson = {
-                'senderName'  : ''                    ,
-                'action'      : 'openMediaSocket'     ,
-                //'actionType'  : request.actionType  ,
-                'target'      : 'all'                 ,
-                'data'        : {
-                    'channelID':'sdfdfasd'
-                }    
-            };
+                    'action'       : 'openMediaSocket'     ,
+                    'actionType'   : 'MediaSendSocket'     ,
+                    'target'       : 'all'                 ,
+                    'data'         : {
+                        'id'   : dataID   ,
+                        'name' : dataName
+                    }     
+            };    
             connectManager.getControlerSocket().doSend(messageJson);
-
-            // if 
-            // let mediasockpairid = 
-            // return mediasockpairid ;
         }
+
+        this.sychron = function(response){
+            if(response.actionType == 'MediaReceiveSocket'){
+                //let mediaReceiveSocket = connectManager.getMediaSendSocket(response.pairID);
+                receiveMedia(response);
+                return;
+            }
+
+
+            if(response.actionType == 'MediaSendSocket'){
+                let mediaSendSocket = connectManager.getMediaSendSocket(response.pairID);
+                let dataUrl         = $('#audioContainer > [data-id='+ response.dataId +']').attr('src');
+                receiveMedia(response);
+                sendMedia(dataUrl,mediaSendSocket);
+
+                function sendMedia(url,socket){
+                    //getBlobFromObjectURL
+                    var xhr = new XMLHttpRequest();
+                        xhr.open('GET', url, true);
+                        xhr.responseType = 'arraybuffer';
+                        xhr.onload = function(e) { 
+                            if (this.status == 200){
+                                let arraybuffer = this.response ;
+                                setTimeout(function(){
+                                    socket.doSend(arraybuffer); 
+                                },0);
+                            }
+                        };
+                        xhr.send();
+                }
+                return;
+            }
+
+            function receiveMedia(response){
+                    let text = document.createTextNode( response.dataName );
+                    let elem = document.createElement( 'div' );
+                    let audioElem = document.createElement('audio');
+                        elem.setAttribute( 'id' , 'directoryEntryReceive'+response.pairID );
+                        elem.setAttribute( 'class' , 'directoryEntry' );
+                        elem.setAttribute( 'data-id' , 'Receive'+response.pairID );
+                        elem.setAttribute( 'data-type' , 'File' );
+                        elem.setAttribute( 'data-directory' , '' );
+                        elem.setAttribute( 'data-degree' , '0');
+                        elem.setAttribute( 'data-status' , 'close' );
+                        elem.setAttribute( 'data-style' , 'hide' );
+                        elem.setAttribute( 'data-name'  , response.dataName );
+                        elem.appendChild( text );
+                        audioElem.setAttribute( 'id' , 'audioElemReceive'+response.pairID );
+                        audioElem.setAttribute( 'data-id' , 'Receive'+response.pairID );
+                        audioElem.setAttribute( 'data-media-name' , response.dataName );
+                        audioElem.setAttribute( 'data-status' , 'close' );
+                        audioElem.setAttribute( 'loop' , 'loop' );
+                        audioElem.setAttribute( 'type' , 'blob' );
+                        audioElem.setAttribute( 'src' ,  '' );
+                        audioElem.setAttribute( 'autoplay' ,  'autoplay' );
+                        document.getElementById('audioContainer').appendChild( audioElem );
+                        elem.appendChild(mediaManager.createMediaplayer(elem,audioElem));
+                        $('#mediaPlayingContainer').append($(document.createElement( 'div' )).attr('playing-data-id','Receive'+response.pairID));
+            }
+
+        }
+        // function mediasockpairid(){
+
+        // }
 
         //instance.objectUrlConverter = new Worker('worker.js');  
-        function getBlobFromObjectURL(url){
-            var xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.responseType = 'blob';
-                xhr.onload = function(e) {
-                if (this.status == 200) {
-                    var blob = this.response;
-                    //connectManager.getS
-                }
-            };
-            xhr.send();
-        }
+        
         // function setVideoConfigAfterWindowAlready(request, sender, sendResponse) {
         //     if(request.action == 'alreadySetWindow'){
         //         //it's asynchronized ?

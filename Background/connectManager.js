@@ -114,10 +114,18 @@
         };
 
         this.getMediaSendSocket =function(mediasockpairid){
+            for(var i in mediaSendSocketArray){
+                if(mediaSendSocketArray[i].mediasockpairid && mediaSendSocketArray[i].mediasockpairid == mediasockpairid  )
+                    return mediaSendSocketArray[i];
+            }
             return null ;
         }
 
         this.getMediaReceiveSocket =function(mediasockpairid){
+            for(var i in mediaReceiveSocketArray){
+                if(mediaReceiveSocketArray[i].mediasockpairid && mediaReceiveSocketArray[i].mediasockpairid == mediasockpairid  )
+                    return mediaReceiveSocketArray[i];
+            }
             return null ;
         }
 
@@ -182,6 +190,7 @@
         this.getChannelID =function(){
             return channelID ;
         }
+
     }
 })();
 
@@ -215,10 +224,30 @@ function ControlerSocket(connectURL, successCallback , errorCallback){
                 break;
             case 'openMediaSocket':
                 let mediaSocketPairID = responseJson.messageBody.mediaSocketPairID ;
-                if(responseJson.userName == connectManager.getUserName()) //MediaSenfer
+                let actionType        = responseJson.messageBody.actionType ;
+                let dataId            = responseJson.messageBody.data.id ;
+                let dataName          = responseJson.messageBody.data.name ;
+
+                if(responseJson.userName == connectManager.getUserName() && actionType == 'MediaSendSocket' ){ //MediaSenfer
                     connectManager.createMediaSendSocket(mediaSocketPairID);
-                else                                                      //MediaReceiver
+                    mediaManager.sychron({
+                        'actionType' : actionType,
+                        'dataId'     : dataId,
+                        'dataName'   : dataName,
+                        'pairID'     : mediaSocketPairID
+                    });
+                } 
+                    
+                else { //MediaReceiver
                     connectManager.createMediaReceiveSocket(mediaSocketPairID);
+                    mediaManager.sychron({
+                        'actionType' : actionType,
+                        'dataId'     : dataId,
+                        'dataName'   : dataName,
+                        'pairID'     : mediaSocketPairID
+                    });
+                }                                                     
+                    
                 break;
             default:
         }
@@ -279,7 +308,13 @@ function MediaSendSocket(connectURL){
         instance.onerror = onError ; 
 
     instance.doSend = function (blob){
-        instance.send(blob);
+        try{
+            instance.send(blob);
+        }
+        catch(e){
+            for(var i in  e)
+             console.log(i+' : '+e[i]);
+        }
     };
 
     function onOpen(){
@@ -287,8 +322,21 @@ function MediaSendSocket(connectURL){
     };
 
     function onMessage(response){
-        // let responseJson = JSON.parse(response.data);
-        // chatManager.newMessage(responseJson);
+        if (response.data instanceof Blob) {
+            //get blob data
+            // let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // source = audioCtx.createBufferSource();
+            // audioCtx.decodeAudioData(response.data, function(buffer) {
+            //     source.buffer = buffer;
+            //     source.connect(audioCtx.destination);
+            //     source.loop = true;
+            // },
+            // function(e){ console.log("Error with decoding audio data" + e.err); 
+            // });
+            document.getElementById('audioElemReceive'+instance.mediasockpairid).setAttribute('src',window.URL.createObjectURL(response.data));
+            // $('#audioContainer > [data-id='+ response.dataId +']').attr('src');
+            // blobhandler(response.data);
+   		}
     };  
 
     function onClose(e){

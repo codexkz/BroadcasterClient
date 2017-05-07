@@ -55,12 +55,12 @@ function injectMediaPlayerHanddlersToElement () {
 		 $(this).find('.play').on('click',function(e){
                 e.preventDefault();
                 e.stopImmediatePropagation();
-                if(isfirstplay){
-                    bgPage.mediaManager.createMediasocketRequest(function(mediasockpairid){
-                        doAfterGetMediaSockPairID(mediasockpairid);
-                    });
-                }
-                function doAfterGetMediaSockPairID(){
+                //let thisElem = this ;
+                if(true){ //todo
+                    let dataID   =   $(this).parent().parent().attr('data-id')   ;
+                    let dataName =   $(this).parent().parent().attr('data-name') ;
+                    bgPage.mediaManager.createMediasocketRequest(dataID,dataName);
+                }else{
                     bgPage.mediaManager.play($(this).parent().parent().attr('data-id'),true); // record to bg
                 }
 		 });
